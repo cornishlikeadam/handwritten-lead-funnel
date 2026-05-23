@@ -255,9 +255,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             data.consent_opt_in = document.getElementById('input-consent').checked;
 
-            // Cache generated phrases in sessionStorage for confirmed page
+            // Cache generated phrases and details in sessionStorage for confirmed page
             sessionStorage.setItem('mirror5000_identity_sentence', identityRecap.textContent);
             sessionStorage.setItem('mirror5000_stakes_statement', stakeRecap.textContent);
+            sessionStorage.setItem('mirror5000_email', data.email);
+            sessionStorage.setItem('mirror5000_first_name', data.first_name);
 
             // Display loading
             const originalBtnText = submitBtn.textContent;

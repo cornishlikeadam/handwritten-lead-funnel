@@ -58,9 +58,11 @@
                 <p style="font-size: 0.95rem; line-height: 1.5; color: var(--shadow-charcoal); margin-bottom: 1rem;">
                     Get access to my private notion template tracker, daily checklists, video hooks template, and three silent-vlog example walkthroughs. Stop posting blindly. Implement the Mirror Method with structures.
                 </p>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                     <span style="font-family: var(--font-heading); font-size: 1.25rem; color: var(--stamp-red); transform: rotate(-3deg);">Coming Soon</span>
-                    <button class="btn-stamp" style="font-size: 0.9rem; padding: 6px 14px; opacity: 0.65; cursor: not-allowed;" disabled>Join Waitlist</button>
+                    <div id="waitlist-action-container" style="display: flex; gap: 10px; align-items: center;">
+                        <button class="btn-stamp" id="btn-join-waitlist" style="font-size: 0.9rem; padding: 6px 14px;">Join Waitlist</button>
+                    </div>
                 </div>
             </div>
 
@@ -91,6 +93,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const identity = sessionStorage.getItem('mirror5000_identity_sentence');
             const stakes = sessionStorage.getItem('mirror5000_stakes_statement');
+            const email = sessionStorage.getItem('mirror5000_email');
 
             if (identity) {
                 document.getElementById('success-identity-sentence').textContent = identity;
@@ -104,6 +107,50 @@
             } else {
                 document.getElementById('success-stakes-statement').textContent = 
                     "For the next 30 days, I am choosing visibility over hiding. If I complete this, I gain clarity. If I quit, I stay stuck in the same routine.";
+            }
+
+            // Waitlist functionality
+            const waitlistBtn = document.getElementById('btn-join-waitlist');
+            const container = document.getElementById('waitlist-action-container');
+
+            if (waitlistBtn && container) {
+                waitlistBtn.addEventListener('click', async () => {
+                    let userEmail = email;
+                    if (!userEmail) {
+                        // Show a small inline text input
+                        container.innerHTML = `
+                            <input type="email" id="waitlist-email-input" class="input-text" placeholder="Enter your email" style="padding: 6px 12px; font-size: 0.9rem; width: 180px; height: 35px; border-width: 2px;">
+                            <button class="btn-stamp primary" id="btn-waitlist-submit" style="font-size: 0.9rem; padding: 6px 14px; transform: none; box-shadow: 2px 2px 0 var(--shadow-charcoal);">Submit</button>
+                        `;
+                        const submitBtn = document.getElementById('btn-waitlist-submit');
+                        if (submitBtn) {
+                            submitBtn.addEventListener('click', async () => {
+                                const inputVal = document.getElementById('waitlist-email-input').value.trim();
+                                if (!inputVal) return alert('Email required.');
+                                await submitWaitlist(inputVal);
+                            });
+                        }
+                        return;
+                    }
+
+                    await submitWaitlist(userEmail);
+                });
+            }
+
+            async function submitWaitlist(targetEmail) {
+                try {
+                    const response = await fetch('/api/waitlist', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: targetEmail })
+                    });
+                    const res = await response.json();
+                    if (!response.ok) throw new Error(res.error || 'Failed to join.');
+
+                    container.innerHTML = `<span style="font-family: var(--font-heading); color: var(--success-green); font-size: 1.1rem; transform: rotate(1deg);">✓ Joined Waitlist!</span>`;
+                } catch (err) {
+                    alert(err.message || 'Error joining waitlist.');
+                }
             }
         });
     </script>

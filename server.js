@@ -21,6 +21,19 @@ app.use((req, res, next) => {
     next();
 });
 
+// PRIVATE ROUTING
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'mirror5000.html'), { dotfiles: 'allow' });
+});
+
+app.get('/mirror5000', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'mirror5000.html'), { dotfiles: 'allow' });
+});
+
+app.get('/mirror5000/confirmed', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'confirmed.html'), { dotfiles: 'allow' });
+});
+
 app.use(express.static(path.join(__dirname, 'public'), { dotfiles: 'allow' }));
 
 // Database File Paths (Fallback JSON)
@@ -81,6 +94,9 @@ async function dbInit() {
                     email_sent_status VARCHAR(255) DEFAULT 'pending',
                     admin_notified_status VARCHAR(255) DEFAULT 'pending'
                 );
+            `);
+            await pool.query(`
+                ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS waitlist_kit BOOLEAN DEFAULT FALSE;
             `);
             await pool.query(`
                 CREATE TABLE IF NOT EXISTS email_outbox (
@@ -271,15 +287,8 @@ function requireAdmin(req, res, next) {
 }
 
 // -------------------------------------------------------------
-// PRIVATE ROUTING
+// API Endpoints
 // -------------------------------------------------------------
-app.get('/mirror5000', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'mirror5000.html'), { dotfiles: 'allow' });
-});
-
-app.get('/mirror5000/confirmed', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'confirmed.html'), { dotfiles: 'allow' });
-});
 
 // -------------------------------------------------------------
 // API: Subscribe Endpoint
@@ -372,6 +381,50 @@ app.post('/api/subscribe', rateLimiter, async (req, res) => {
         message: 'Successfully registered in the Mirror 5000 system.',
         redirectUrl: '/mirror5000/confirmed'
     });
+});
+
+// -------------------------------------------------------------
+// API: Waitlist Opt-In Endpoint
+// -------------------------------------------------------------
+app.post('/api/waitlist', async (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required.' });
+
+    try {
+        if (usePostgres) {
+            const result = await pool.query(
+                'UPDATE subscribers SET waitlist_kit = TRUE WHERE LOWER(email) = LOWER($1) RETURNING *',
+                [email]
+            );
+            if (result.rowCount === 0) {
+                const subId = crypto.randomUUID();
+                await pool.query(
+                    'INSERT INTO subscribers (id, created_at, email, waitlist_kit, source_page) VALUES ($1, NOW(), $2, TRUE, $3)',
+                    [subId, email, 'waitlist_kit']
+                );
+            }
+        } else {
+            const subs = await getSubscribers();
+            let sub = subs.find(s => s.email.toLowerCase() === email.toLowerCase());
+            if (sub) {
+                sub.waitlist_kit = true;
+            } else {
+                sub = {
+                    id: crypto.randomUUID(),
+                    created_at: new Date().toISOString(),
+                    email: email,
+                    waitlist_kit: true,
+                    source_page: 'waitlist_kit'
+                };
+                subs.push(sub);
+            }
+            fs.writeFileSync(DB_FILE, JSON.stringify(subs, null, 2), 'utf8');
+        }
+        res.json({ success: true, message: 'Successfully joined waitlist.' });
+    } catch (err) {
+        console.error("Waitlist DB update failed:", err);
+        res.status(500).json({ error: err.message || 'Failed to join waitlist.' });
+    }
 });
 
 // -------------------------------------------------------------

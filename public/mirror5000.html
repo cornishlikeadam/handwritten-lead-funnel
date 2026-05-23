@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirror 5000 | The Field Manual for Becoming Seen Until Believed</title>
+    <meta name="description" content="Download the Seen Until Believed creator manual. Stamp your identity, set your 30-day stake, and join the visibility experiment.">
+    <link rel="stylesheet" href="mirror-style.css?v=1.0.3">
+</head>
+<body>
+
+    <div class="notebook-container">
+        
+        <!-- Header -->
+        <header>
+            <div class="stamp-badge">Field Copy</div>
+            <div class="mirror-tag">Mirror 5000</div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-heading">Your life is not boring.<br>It has not been framed yet.</h1>
+            <p class="hero-subheading">
+                Download the field manual for turning ordinary routine into reach, trust, and opportunity — without pretending to be someone you are not.
+            </p>
+
+            <!-- Book Mockup/Cover Card -->
+            <div class="notebook-card" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.5rem;">
+                <div class="stamp-badge" style="border-style: solid; border-color: var(--gold); color: var(--gold); transform: rotate(4deg); font-size: 1.1rem; position: absolute; top: -10px; right: -10px;">
+                    30-Day Visibility Experiment
+                </div>
+                
+                <div style="max-width: 240px; border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--shadow-charcoal); border-radius: 6px; overflow: hidden; transform: rotate(-1.5deg);">
+                    <img src="assets/seen_until_believed_cover.png" alt="Seen Until Believed Cover" style="width: 100%; display: block;">
+                </div>
+                
+                <div style="font-family: var(--font-handwritten); font-size: 1.8rem; line-height: 1.3; margin-top: 0.5rem;">
+                    "Seen Until Believed"<br>
+                    <span style="color: var(--stamp-red); font-family: var(--font-heading); font-size: 1.5rem;">The Mirror 5000 Edition</span>
+                </div>
+
+                <button type="button" class="btn-stamp primary" onclick="scrollToForm()">
+                    Stamp My Name + Send the Manual
+                </button>
+
+                <p class="hero-microcopy">
+                    No fake guru promise. No fame guarantee. Just a practical visibility system for people ready to be seen on purpose.
+                </p>
+            </div>
+        </section>
+
+        <!-- Main Form Workbook Card -->
+        <div class="notebook-card" id="form-container">
+            <div class="card-title">Mirror Entry Sheet</div>
+            <p class="card-prompt">Complete your passport entry to unlock the field manual delivery.</p>
+
+            <!-- Progress Tracker -->
+            <div class="step-tracker">
+                <div class="step-circle active" id="step-node-1" data-step="1">1</div>
+                <div class="step-circle" id="step-node-2" data-step="2">2</div>
+                <div class="step-circle" id="step-node-3" data-step="3">3</div>
+            </div>
+
+            <!-- Error message alert -->
+            <div class="alert-bubble" id="error-alert"></div>
+
+            <form id="mirror-form" novalidate>
+                
+                <!-- Honeypot (Invisible Spam Protection) -->
+                <div class="hp-field">
+                    <input type="text" name="website" id="hp-web" tabindex="-1" autocomplete="off">
+                    <input type="text" name="nickname" id="hp-nick" tabindex="-1" autocomplete="off">
+                </div>
+
+                <!-- STEP 1: Identity & Stakes -->
+                <div class="form-step active" id="step-1">
+                    
+                    <div class="form-group">
+                        <div class="field-label">1. Claim Your Visibility Identity</div>
+                        <div class="sentence-builder">
+                            I am a 
+                            <select name="identity_type" id="input-identity" class="select-blank">
+                                <option value="" disabled selected>select role...</option>
+                                <option value="regular worker">regular worker</option>
+                                <option value="student">student</option>
+                                <option value="creator">creator</option>
+                                <option value="artist">artist</option>
+                                <option value="side hustler">side hustler</option>
+                                <option value="builder">builder</option>
+                                <option value="parent">parent</option>
+                                <option value="athlete">athlete</option>
+                                <option value="freelancer">freelancer</option>
+                                <option value="founder-in-progress">founder-in-progress</option>
+                                <option value="someone starting over">someone starting over</option>
+                                <option value="other">other</option>
+                            </select>
+                            trying to 
+                            <select name="goal" id="input-goal" class="select-blank">
+                                <option value="" disabled selected>select objective...</option>
+                                <option value="escape the rut">escape the rut</option>
+                                <option value="build a side income">build a side income</option>
+                                <option value="become consistent">become consistent</option>
+                                <option value="document my transformation">document my transformation</option>
+                                <option value="grow an audience">grow an audience</option>
+                                <option value="turn my life into content">turn my life into content</option>
+                                <option value="build a personal brand">build a personal brand</option>
+                                <option value="learn a profitable skill">learn a profitable skill</option>
+                                <option value="stop hiding">stop hiding</option>
+                                <option value="create opportunities">create opportunities</option>
+                            </select>
+                            by documenting 
+                            <input type="text" name="documenting" id="input-documenting" class="input-blank" placeholder="my work life, discipline, art..." required>.
+                        </div>
+                        
+                        <div class="compiler-recap-box" id="identity-recap">
+                            I am a [identity] trying to [goal] by documenting [journey].
+                        </div>
+                        
+                        <div class="margin-note">
+                            "If you can name your story, the internet can start remembering it."
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 3.5rem;">
+                        <div class="field-label">2. Set the Stakes</div>
+                        <p class="card-prompt" style="margin-bottom: 0.8rem;">A vague goal disappears. A public stake creates pressure.</p>
+                        
+                        <div class="form-group">
+                            <label style="font-weight: 500; font-size: 0.95rem;">My 30-day challenge is to:</label>
+                            <input type="text" name="challenge_30_day" id="input-challenge" class="input-text" placeholder="e.g. Post 3 videos a day for 30 days while building my side hustle" required>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label style="font-weight: 500; font-size: 0.95rem;">If I complete this, I could gain:</label>
+                                <select name="upside" id="input-upside" class="input-text" style="background-color: var(--paper-bg); font-weight: 500;">
+                                    <option value="" disabled selected>Select gain...</option>
+                                    <option value="confidence">confidence</option>
+                                    <option value="consistency">consistency</option>
+                                    <option value="audience growth">audience growth</option>
+                                    <option value="leads">leads</option>
+                                    <option value="sales">sales</option>
+                                    <option value="proof">proof</option>
+                                    <option value="discipline">discipline</option>
+                                    <option value="clarity">clarity</option>
+                                    <option value="momentum">momentum</option>
+                                    <option value="a new identity">a new identity</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="font-weight: 500; font-size: 0.95rem;">If I quit, I stay stuck in:</label>
+                                <select name="downside" id="input-downside" class="input-text" style="background-color: var(--paper-bg); font-weight: 500;">
+                                    <option value="" disabled selected>Select downside...</option>
+                                    <option value="the same routine">the same routine</option>
+                                    <option value="invisibility">invisibility</option>
+                                    <option value="procrastination">procrastination</option>
+                                    <option value="fear of being seen">fear of being seen</option>
+                                    <option value="paycheck-to-paycheck thinking">paycheck-to-paycheck thinking</option>
+                                    <option value="unfinished ideas">unfinished ideas</option>
+                                    <option value="consuming instead of creating">consuming instead of creating</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="compiler-recap-box" id="stake-recap" style="border-left-color: var(--stamp-red);">
+                            For the next 30 days, I am choosing visibility over hiding. If I complete this, I gain [upside]. If I quit, I stay stuck in [downside].
+                        </div>
+                    </div>
+
+                    <div class="nav-buttons">
+                        <div></div>
+                        <button type="button" class="btn-stamp primary" id="next-btn-1">
+                            Step 2: Signal →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Audience signals -->
+                <div class="form-step" id="step-2">
+                    
+                    <!-- Audience Size -->
+                    <div class="form-group">
+                        <div class="field-label">What life are you turning into content? (Audience Size)</div>
+                        <div class="choice-grid">
+                            <label class="grid-choice-card">
+                                <input type="radio" name="audience_size" value="0–100" checked>
+                                <span class="grid-box-check"></span>
+                                <span>0 to 100 subscribers</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="audience_size" value="100–500">
+                                <span class="grid-box-check"></span>
+                                <span>100 to 500</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="audience_size" value="500–1,000">
+                                <span class="grid-box-check"></span>
+                                <span>500 to 1,000</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="audience_size" value="1,000–5,000">
+                                <span class="grid-box-check"></span>
+                                <span>1,000 to 5,000</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="audience_size" value="5,000–10,000">
+                                <span class="grid-box-check"></span>
+                                <span>5,000 to 10,000</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="audience_size" value="10,000+">
+                                <span class="grid-box-check"></span>
+                                <span>10,000+ (Scaling)</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="audience_size" value="I have no audience yet">
+                                <span class="grid-box-check"></span>
+                                <span>I have no audience yet</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Primary platform -->
+                    <div class="form-group" style="margin-top: 2rem;">
+                        <div class="field-label">Where are you trying to become visible first? (Platform)</div>
+                        <div class="choice-grid">
+                            <label class="grid-choice-card">
+                                <input type="radio" name="primary_platform" value="TikTok" checked>
+                                <span class="grid-box-check"></span>
+                                <span>TikTok</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="primary_platform" value="Instagram">
+                                <span class="grid-box-check"></span>
+                                <span>Instagram</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="primary_platform" value="YouTube Shorts">
+                                <span class="grid-box-check"></span>
+                                <span>YouTube Shorts</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="primary_platform" value="YouTube Long-Form">
+                                <span class="grid-box-check"></span>
+                                <span>YouTube Long-Form</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="primary_platform" value="X/Twitter">
+                                <span class="grid-box-check"></span>
+                                <span>X/Twitter</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="primary_platform" value="LinkedIn">
+                                <span class="grid-box-check"></span>
+                                <span>LinkedIn</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="primary_platform" value="Facebook">
+                                <span class="grid-box-check"></span>
+                                <span>Facebook</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="primary_platform" value="Offline/local community">
+                                <span class="grid-box-check"></span>
+                                <span>Offline/Local</span>
+                            </label>
+                            <label class="grid-choice-card">
+                                <input type="radio" name="primary_platform" value="I have not chosen yet">
+                                <span class="grid-box-check"></span>
+                                <span>Not Chosen Yet</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Monetization Goal -->
+                    <div class="form-group" style="margin-top: 2rem;">
+                        <div class="field-label">How do you want attention to become money? (Monetization)</div>
+                        <select name="monetization_route" id="input-monetization" class="input-text" style="background-color: var(--paper-bg); font-weight: 500;">
+                            <option value="" disabled selected>Select monetization path...</option>
+                            <option value="digital product">Digital product (Ebook, templates, SaaS)</option>
+                            <option value="service business">Service business (Agency, freelance)</option>
+                            <option value="coaching/consulting">Coaching or Consulting</option>
+                            <option value="affiliate marketing">Affiliate marketing</option>
+                            <option value="paid community">Paid community</option>
+                            <option value="newsletter">Newsletter subscriptions</option>
+                            <option value="personal brand">Personal Brand/Sponsorships</option>
+                            <option value="local business">Local physical business</option>
+                            <option value="music/art/fashion">Creative art, music, or fashion</option>
+                            <option value="real estate">Real Estate</option>
+                            <option value="AI tools">AI tools / Automation builds</option>
+                            <option value="I do not know yet">I do not know yet</option>
+                        </select>
+                    </div>
+
+                    <!-- Obstacle -->
+                    <div class="form-group" style="margin-top: 2rem;">
+                        <div class="field-label">What keeps you hidden right now? (Biggest Obstacle)</div>
+                        <select name="biggest_obstacle" id="input-obstacle" class="input-text" style="background-color: var(--paper-bg); font-weight: 500;">
+                            <option value="" disabled selected>Select biggest obstacle...</option>
+                            <option value="fear of posting">Fear of posting / judgment</option>
+                            <option value="no clear niche">No clear niche / direction</option>
+                            <option value="no content ideas">No content ideas</option>
+                            <option value="no editing skill">No video editing/production skills</option>
+                            <option value="no consistency">No consistency / discipline</option>
+                            <option value="no offer">No actual offer/product to sell</option>
+                            <option value="no audience">No audience distribution</option>
+                            <option value="no time">No time / busy schedule</option>
+                            <option value="too many ideas">Too many ideas (Analysis paralysis)</option>
+                            <option value="not sure what to sell">Not sure what to sell</option>
+                        </select>
+                    </div>
+
+                    <div class="nav-buttons">
+                        <button type="button" class="btn-stamp" id="prev-btn-2">← Back</button>
+                        <button type="button" class="btn-stamp primary" id="next-btn-2">Step 3: Deliver →</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Contact & Deliver -->
+                <div class="form-step" id="step-3">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label class="field-label" for="input-name">First Name</label>
+                            <input type="text" name="first_name" id="input-name" class="input-text" placeholder="e.g. Kendren" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label" for="input-email">Email Address</label>
+                            <input type="email" name="email" id="input-email" class="input-text" placeholder="e.g. you@example.com" required>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 1rem;">
+                        <div class="form-group">
+                            <label class="field-label" for="input-insta">Instagram Handle</label>
+                            <input type="text" name="instagram_handle" id="input-insta" class="input-text" placeholder="@handle">
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label" for="input-tiktok">TikTok Handle</label>
+                            <input type="text" name="tiktok_handle" id="input-tiktok" class="input-text" placeholder="@handle">
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label" for="input-yt">YouTube URL</label>
+                            <input type="text" name="youtube_url" id="input-yt" class="input-text" placeholder="youtube.com/c/name">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 1rem;">
+                        <div class="form-group">
+                            <label class="field-label" for="input-phone">Phone Number <span style="font-size: 0.8rem; opacity: 0.6;">(Optional)</span></label>
+                            <input type="text" name="phone" id="input-phone" class="input-text" placeholder="e.g. +1 555-0199">
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label" for="input-city">City/State <span style="font-size: 0.8rem; opacity: 0.6;">(Optional)</span></label>
+                            <input type="text" name="city_state" id="input-city" class="input-text" placeholder="e.g. Los Angeles, CA">
+                        </div>
+                    </div>
+
+                    <!-- Consent check -->
+                    <label class="grid-choice-card" style="margin-top: 2rem; border: none; box-shadow: none; background: transparent; padding: 0;">
+                        <input type="checkbox" name="consent_opt_in" id="input-consent" value="true" checked>
+                        <span class="grid-box-check"></span>
+                        <span style="font-size: 0.95rem; line-height: 1.4;">Yes, send me the free PDF and future Mirror 5000 notes, updates, and creator strategy emails. I can unsubscribe anytime.</span>
+                    </label>
+
+                    <div class="nav-buttons" style="margin-top: 2.5rem;">
+                        <button type="button" class="btn-stamp" id="prev-btn-3">← Back</button>
+                        <button type="submit" class="btn-stamp primary" id="submit-btn" style="transform: rotate(1.5deg);">
+                            Stamp + Send My Copy
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Hidden Admin Ledger Drawer -->
+        <section class="admin-drawer" id="admin-drawer-ledger">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed var(--ink); padding-bottom: 0.8rem; margin-bottom: 1.5rem;">
+                <h2 style="font-family: var(--font-display); font-size: 2.2rem; text-transform: uppercase;">Mirror 5000 Intelligence Ledger</h2>
+                <button type="button" class="btn-stamp" id="btn-export-csv" style="padding: 6px 14px; font-size: 0.95rem;">
+                    Download Field Ledger CSV
+                </button>
+            </div>
+
+            <!-- Stats Panel -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-number" id="stat-total">0</div>
+                    <div class="stat-label">Total Subs</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="stat-today">0</div>
+                    <div class="stat-label">Subs Today</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="stat-monetization" style="font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">N/A</div>
+                    <div class="stat-label">Top Monetization</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="stat-obstacle" style="font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">N/A</div>
+                    <div class="stat-label">Top Obstacle</div>
+                </div>
+            </div>
+
+            <!-- Search / Filter inputs -->
+            <div style="margin-bottom: 1rem; display: flex; gap: 10px;">
+                <input type="text" id="ledger-search" class="input-text" placeholder="Search by name, email, platform, or sentence..." style="padding: 8px 12px; font-size: 0.9rem;">
+            </div>
+
+            <!-- Table -->
+            <div class="ledger-table-container">
+                <table class="ledger-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Identity Alignment</th>
+                            <th>Obstacle</th>
+                            <th>Monetization</th>
+                            <th>Email Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledger-rows">
+                        <tr>
+                            <td colspan="7" style="text-align: center; opacity: 0.6;">No data loaded.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Failed / Pending emails section -->
+            <div class="outbox-retry-section">
+                <h3 style="font-family: var(--font-display); font-size: 1.4rem; text-transform: uppercase; margin-bottom: 1rem; color: var(--stamp-red);">Pending / Failed Email Queue</h3>
+                <div id="outbox-list">
+                    <p style="opacity: 0.6; font-size: 0.9rem;">No pending emails in queue.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-social-links">
+                <span>By Kendren Cornish</span>
+                <a href="https://kendren.us" target="_blank">kendren.us</a>
+                <a href="https://instagram.com/THXKENDREN" target="_blank">@THXKENDREN</a>
+                <a href="https://instagram.com/FRU1T4U" target="_blank">@FRU1T4U</a>
+                <a href="mailto:TACYHON@proton.me">TACYHON@proton.me</a>
+            </div>
+            
+            <p style="font-size: 0.9rem; opacity: 0.7; font-family: var(--font-accents);">
+                Results are not guaranteed. This is a visibility and content strategy system, not a promise of fame, income, or platform growth.
+            </p>
+
+            <div>
+                <button type="button" class="ledger-trigger" id="btn-ledger-trigger">ledger</button>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Password Login Modal Overlay -->
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal-content">
+            <h3 style="font-family: var(--font-heading); font-size: 1.8rem; margin-bottom: 1.5rem; text-transform: uppercase; color: var(--stamp-red);">Ledger Authorization</h3>
+            <p class="card-prompt" style="margin-bottom: 1.5rem;">Enter the Mirror 5000 password key to unlock data systems.</p>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <input type="password" id="admin-pass-input" class="input-text" placeholder="Secret Key" style="text-align: center;">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="btn-stamp" id="btn-login-cancel" style="padding: 8px 16px; font-size: 1rem;">Cancel</button>
+                <button type="button" class="btn-stamp primary" id="btn-login-submit" style="padding: 8px 16px; font-size: 1rem;">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Frontend App Logic -->
+    <script src="mirror-app.js?v=1.0.3"></script>
+    
+    <script>
+        function scrollToForm() {
+            document.getElementById('form-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</body>
+</html>

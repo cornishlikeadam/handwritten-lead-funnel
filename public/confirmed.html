@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stamps Locked | Mirror 5000 Confirmation</title>
+    <link rel="stylesheet" href="../mirror-style.css?v=1.0.3">
+</head>
+<body>
+
+    <div class="notebook-container" style="text-align: center;">
+        
+        <header>
+            <div class="stamp-badge" style="border-color: var(--success-green); color: var(--success-green); transform: rotate(2deg);">Locked In</div>
+            <div class="mirror-tag">Mirror 5000</div>
+        </header>
+
+        <section class="success-layout">
+            
+            <div class="stamp-effect">VISIBLE</div>
+            
+            <h1 class="hero-heading" style="font-size: 2.5rem; margin-top: 1rem;">Passport Authorized</h1>
+            
+            <p class="hero-subheading" style="max-width: 600px; margin: 0 auto;">
+                Your entry was registered in the Mirror 5000 field database. Your copy of the manual is being dispatched to your email.
+            </p>
+
+            <!-- Dynamic alignment recap -->
+            <div class="notebook-card" style="text-align: left; max-width: 600px; width: 100%; border-left: 5px solid var(--accent-purple);">
+                <div class="card-title" style="font-size: 1.4rem; margin-bottom: 1rem;">Your Visibility Framework</div>
+                
+                <p style="font-weight: 500; font-size: 0.95rem; text-transform: uppercase; color: var(--shadow-charcoal);">1. Identity sentence:</p>
+                <div class="compiler-recap-box" id="success-identity-sentence" style="font-size: 1.5rem; margin-top: 5px; margin-bottom: 1.5rem;">
+                    Loading your profile...
+                </div>
+
+                <p style="font-weight: 500; font-size: 0.95rem; text-transform: uppercase; color: var(--shadow-charcoal);">2. 30-Day Stakes Statement:</p>
+                <div class="compiler-recap-box" id="success-stakes-statement" style="font-size: 1.5rem; margin-top: 5px; border-left-color: var(--stamp-red);">
+                    Loading your stakes...
+                </div>
+            </div>
+
+            <!-- PDF Download Box -->
+            <div class="pdf-download-box">
+                <h3 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; color: var(--gold);">Local Delivery Backup</h3>
+                <p style="font-size: 0.95rem; line-height: 1.4; margin-bottom: 1.5rem;">
+                    If emails are slow, blocked, or caught in spam, you can trigger an instant download of the PDF field manual manually:
+                </p>
+                <a href="../assets/seen-until-believed-sacred-tech-edition.pdf" download class="btn-stamp primary" style="text-decoration: none; width: 100%; justify-content: center;">
+                    Download Manual PDF
+                </a>
+            </div>
+
+            <!-- Future Paid Offer Slot -->
+            <div class="offer-tease-card">
+                <div class="stamp-badge" style="font-size: 0.9rem; margin-bottom: 0.5rem; float: right; border-color: var(--accent-purple); color: var(--accent-purple);">UPGRADE</div>
+                <h3 style="font-family: var(--font-display); font-size: 1.6rem; color: var(--accent-purple); margin-bottom: 0.8rem; clear: both;">Want the 30-Day Mirror Execution Kit?</h3>
+                <p style="font-size: 0.95rem; line-height: 1.5; color: var(--shadow-charcoal); margin-bottom: 1rem;">
+                    Get access to my private notion template tracker, daily checklists, video hooks template, and three silent-vlog example walkthroughs. Stop posting blindly. Implement the Mirror Method with structures.
+                </p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-family: var(--font-heading); font-size: 1.25rem; color: var(--stamp-red); transform: rotate(-3deg);">Coming Soon</span>
+                    <button class="btn-stamp" style="font-size: 0.9rem; padding: 6px 14px; opacity: 0.65; cursor: not-allowed;" disabled>Join Waitlist</button>
+                </div>
+            </div>
+
+            <!-- Compliance Text -->
+            <p class="compliance-text">
+                Compliance Disclosure: Results are not guaranteed. This is a visibility and content strategy system, not a promise of fame, income, or platform growth. Your information is only used to send the PDF, newsletter updates, and Mirror 5000 strategy notes. No spam. No selling your data.
+            </p>
+
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-social-links">
+                <span>By Kendren Cornish</span>
+                <a href="https://kendren.us" target="_blank">kendren.us</a>
+                <a href="https://instagram.com/THXKENDREN" target="_blank">@THXKENDREN</a>
+                <a href="https://instagram.com/FRU1T4U" target="_blank">@FRU1T4U</a>
+            </div>
+            <p style="font-size: 0.85rem; opacity: 0.7;">
+                <a href="../mirror5000" style="color: var(--ink); text-decoration: none; font-weight: bold;">← Return to mirror5000</a>
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- Script to render dynamic values -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const identity = sessionStorage.getItem('mirror5000_identity_sentence');
+            const stakes = sessionStorage.getItem('mirror5000_stakes_statement');
+
+            if (identity) {
+                document.getElementById('success-identity-sentence').textContent = identity;
+            } else {
+                document.getElementById('success-identity-sentence').textContent = 
+                    "I am a creator trying to build momentum by documenting my daily growth.";
+            }
+
+            if (stakes) {
+                document.getElementById('success-stakes-statement').textContent = stakes;
+            } else {
+                document.getElementById('success-stakes-statement').textContent = 
+                    "For the next 30 days, I am choosing visibility over hiding. If I complete this, I gain clarity. If I quit, I stay stuck in the same routine.";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -156,6 +156,27 @@ async function addSubscriber(sub) {
             ) VALUES (
                 $1, NOW(), $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24
             )
+            ON CONFLICT (email) DO UPDATE SET
+                first_name = EXCLUDED.first_name,
+                instagram_handle = COALESCE(EXCLUDED.instagram_handle, subscribers.instagram_handle),
+                tiktok_handle = COALESCE(EXCLUDED.tiktok_handle, subscribers.tiktok_handle),
+                youtube_url = COALESCE(EXCLUDED.youtube_url, subscribers.youtube_url),
+                phone = COALESCE(EXCLUDED.phone, subscribers.phone),
+                city_state = COALESCE(EXCLUDED.city_state, subscribers.city_state),
+                identity_type = COALESCE(EXCLUDED.identity_type, subscribers.identity_type),
+                goal = COALESCE(EXCLUDED.goal, subscribers.goal),
+                documenting = COALESCE(EXCLUDED.documenting, subscribers.documenting),
+                generated_identity_sentence = COALESCE(EXCLUDED.generated_identity_sentence, subscribers.generated_identity_sentence),
+                challenge_30_day = COALESCE(EXCLUDED.challenge_30_day, subscribers.challenge_30_day),
+                upside = COALESCE(EXCLUDED.upside, subscribers.upside),
+                downside = COALESCE(EXCLUDED.downside, subscribers.downside),
+                generated_stake_statement = COALESCE(EXCLUDED.generated_stake_statement, subscribers.generated_stake_statement),
+                audience_size = COALESCE(EXCLUDED.audience_size, subscribers.audience_size),
+                primary_platform = COALESCE(EXCLUDED.primary_platform, subscribers.primary_platform),
+                monetization_route = COALESCE(EXCLUDED.monetization_route, subscribers.monetization_route),
+                biggest_obstacle = COALESCE(EXCLUDED.biggest_obstacle, subscribers.biggest_obstacle),
+                consent_opt_in = EXCLUDED.consent_opt_in,
+                source_page = EXCLUDED.source_page
         `;
         const values = [
             sub.id, sub.first_name, sub.email, sub.instagram_handle, sub.tiktok_handle, sub.youtube_url, sub.phone, sub.city_state,
@@ -166,11 +187,19 @@ async function addSubscriber(sub) {
         await pool.query(query, values);
     } else {
         const subs = await getSubscribers();
-        if (subs.some(s => s.email.toLowerCase() === sub.email.toLowerCase())) {
-            throw new Error('Email already registered in the field system.');
+        const existingIdx = subs.findIndex(s => s.email.toLowerCase() === sub.email.toLowerCase());
+        if (existingIdx !== -1) {
+            // Update existing subscriber record with workbook fields
+            subs[existingIdx] = {
+                ...subs[existingIdx],
+                ...sub,
+                id: subs[existingIdx].id, // preserve original id
+                created_at: subs[existingIdx].created_at // preserve original timestamp
+            };
+        } else {
+            sub.created_at = new Date().toISOString();
+            subs.push(sub);
         }
-        sub.created_at = new Date().toISOString();
-        subs.push(sub);
         fs.writeFileSync(DB_FILE, JSON.stringify(subs, null, 2), 'utf8');
     }
 }
@@ -289,6 +318,60 @@ function requireAdmin(req, res, next) {
 // -------------------------------------------------------------
 // API Endpoints
 // -------------------------------------------------------------
+
+// -------------------------------------------------------------
+// API: Recent Subscribers Public Feed (Obfuscated for social proof ticker)
+// -------------------------------------------------------------
+app.get('/api/subscribers/recent', async (req, res) => {
+    try {
+        const subs = await getSubscribers();
+        
+        // Sort descending by created_at
+        subs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        // Take the 15 most recent and obfuscate
+        const recent = subs.slice(0, 15).map(s => {
+            const emailParts = (s.email || '').split('@');
+            let obfuscatedEmail = '';
+            if (emailParts.length === 2) {
+                const namePart = emailParts[0];
+                const domainPart = emailParts[1];
+                const visibleLen = Math.min(2, namePart.length);
+                obfuscatedEmail = namePart.substring(0, visibleLen) + '***@' + domainPart;
+            } else {
+                obfuscatedEmail = '***@***.***';
+            }
+            
+            const name = s.first_name || s.firstName || 'Creator';
+            const visibleNameLen = Math.min(2, name.length);
+            const obfuscatedName = name.substring(0, visibleNameLen) + '***';
+
+            return {
+                name: obfuscatedName,
+                email: obfuscatedEmail
+            };
+        });
+
+        // Add default mock creators if the list has fewer than 5 entries
+        const mockDefaults = [
+            { name: "Al***", email: "al***@gmail.com" },
+            { name: "Ke***", email: "ke***@proton.me" },
+            { name: "Sa***", email: "sa***@substack.com" },
+            { name: "Da***", email: "da***@yahoo.com" },
+            { name: "Ma***", email: "ma***@beehiiv.com" }
+        ];
+        
+        const merged = [...recent];
+        while (merged.length < 5 && mockDefaults.length > 0) {
+            merged.push(mockDefaults.shift());
+        }
+        
+        res.json(merged);
+    } catch (err) {
+        console.error("Error fetching recent subscribers:", err);
+        res.status(500).json({ error: 'Failed to retrieve feed.' });
+    }
+});
 
 // -------------------------------------------------------------
 // API: Subscribe Endpoint

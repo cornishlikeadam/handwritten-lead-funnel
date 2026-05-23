@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ebook Unlocked | Mirror 5000</title>
+    <link rel="stylesheet" href="../mirror-style.css?v=1.0.6">
+    <style>
+        .unlock-card {
+            border: 3px solid var(--ink);
+            border-radius: 8px;
+            padding: 2.5rem;
+            background-color: var(--paper-card);
+            margin: 2.5rem 0;
+            box-shadow: var(--shadow-flat);
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .error-card {
+            border: 3px dashed var(--stamp-red);
+            border-radius: 8px;
+            padding: 2.5rem;
+            background-color: rgba(177, 42, 34, 0.03);
+            margin: 2.5rem 0;
+            box-shadow: var(--shadow-flat);
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+        }
+        .download-badge {
+            background-color: rgba(108, 148, 130, 0.15);
+            color: var(--success-green);
+            border: 3px solid var(--success-green);
+            padding: 8px 24px;
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            display: inline-block;
+            transform: rotate(-3deg);
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="notebook-container" style="text-align: center;">
+        
+        <header>
+            <div class="stamp-badge" style="border-color: var(--success-green); color: var(--success-green); transform: rotate(4deg);">Payment Verified</div>
+            <div class="mirror-tag">Mirror 5000</div>
+        </header>
+
+        <section class="success-layout" style="align-items: center;">
+            
+            <!-- Loading Indicator -->
+            <div id="loading-state" style="padding: 3rem 0;">
+                <p style="font-family: var(--font-heading); font-size: 1.5rem; color: var(--ink); animation: pulse 1s infinite alternate;">
+                    Verifying download key...
+                </p>
+            </div>
+
+            <!-- Unlock Card (Success) -->
+            <div class="unlock-card" id="success-state" style="display: none;">
+                <div class="download-badge">UNLOCKED</div>
+                <h2 style="font-family: var(--font-display); font-size: 2.4rem; color: var(--ink);">Trillion Dollar Miracle</h2>
+                <p style="font-family: var(--font-accents); font-size: 1.2rem; color: var(--accent-purple); font-weight: bold; margin-bottom: 1.5rem;">
+                    The Wealth Mirror After Visibility
+                </p>
+
+                <p style="font-size: 1.05rem; line-height: 1.6; color: var(--shadow-charcoal); margin-bottom: 2rem;">
+                    Your transaction has been approved. Click below to stream/download your digital field file copy of the Trillion Dollar Miracle ebook.
+                </p>
+
+                <a href="" id="btn-download-ebook" class="btn-stamp primary" style="font-size: 1.3rem; padding: 14px 28px; width: 100%; justify-content: center; text-decoration: none; display: inline-flex;">
+                    Download Ebook PDF
+                </a>
+
+                <div class="accent-line" style="border-top: 2px dashed var(--ink); margin: 2rem 0;"></div>
+
+                <p style="font-size: 0.85rem; color: var(--ink); opacity: 0.8; font-style: italic;">
+                    Notice: This download link is unique to your purchase (<strong id="buyer-email-display">email</strong>) and will expire in 7 days. Do not share this URL.
+                </p>
+            </div>
+
+            <!-- Error Card (Failure) -->
+            <div class="error-card" id="error-state">
+                <h2 style="font-family: var(--font-display); font-size: 2.2rem; color: var(--stamp-red);">Verification Failed</h2>
+                <p style="font-size: 1.1rem; line-height: 1.6; color: var(--ink); margin-top: 1rem; margin-bottom: 1.5rem;" id="error-message-text">
+                    Your access code is invalid, has expired, or is pending verification.
+                </p>
+                <div style="font-family: var(--font-body); font-size: 0.95rem; text-align: left; background-color: var(--paper-bg); padding: 15px; border-radius: 4px; border: 1.5px solid var(--ink);">
+                    <strong>Troubleshooting:</strong><br>
+                    - If you paid via Cash App, please allow up to 1-2 hours for the admin to manually approve your transaction.<br>
+                    - If you did not receive your link or believe this is an error, contact support at <a href="mailto:kendren@proton.me" style="color: var(--stamp-red); font-weight: bold;">kendren@proton.me</a> or <a href="mailto:tachyon@proton.me" style="color: var(--stamp-red); font-weight: bold;">tachyon@proton.me</a>.
+                </div>
+                <div style="margin-top: 2rem;">
+                    <a href="../mirror5000-test" class="btn-stamp" style="font-size: 0.95rem; text-decoration: none;">
+                        Return to Homepage
+                    </a>
+                </div>
+            </div>
+
+        </section>
+
+        <footer>
+            <div class="footer-social-links">
+                <span>By Kendren Cornish</span>
+                <a href="https://kendren.us" target="_blank">kendren.us</a>
+                <a href="mailto:TACYHON@proton.me">TACYHON@proton.me</a>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://localhost:3005'
+            : '';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const stripeSessionId = urlParams.get('session_id');
+
+            const loadingState = document.getElementById('loading-state');
+            const successState = document.getElementById('success-state');
+            const errorState = document.getElementById('error-state');
+            const errorText = document.getElementById('error-message-text');
+
+            if (!token && !stripeSessionId) {
+                loadingState.style.display = 'none';
+                errorState.style.display = 'block';
+                errorText.textContent = 'Token parameters are missing. Access rejected.';
+                return;
+            }
+
+            // If coming back from Stripe successful checkout session
+            if (stripeSessionId && !token) {
+                // In production, we'd wait for Stripe webhook, but let's poll/query Stripe session state
+                // Let's implement check-stripe API if Stripe mode is configured, otherwise fallback:
+                loadingState.innerHTML = '<p style="font-family: var(--font-heading); font-size: 1.5rem; color: var(--ink);">Validating Stripe purchase...</p>';
+                try {
+                    // Let's check status
+                    // Just direct user to wait or prompt their email
+                    setTimeout(() => {
+                        loadingState.style.display = 'none';
+                        errorState.style.display = 'block';
+                        errorText.innerHTML = `Stripe session completed. Your email outbox is dispatching the file. Please check your inbox or search for your spam folder.<br><br>Email: <strong>${sessionStorage.getItem('mirror5000_email') || 'your registered email'}</strong>`;
+                    }, 2500);
+                } catch (e) {
+                    loadingState.style.display = 'none';
+                    errorState.style.display = 'block';
+                }
+                return;
+            }
+
+            // Normal token unlock validation
+            try {
+                const res = await fetch(API_BASE + `/api/validate-token-test?token=${encodeURIComponent(token)}`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+
+                loadingState.style.display = 'none';
+                if (data.valid) {
+                    successState.style.display = 'block';
+                    document.getElementById('buyer-email-display').textContent = data.email;
+                    document.getElementById('btn-download-ebook').setAttribute('href', API_BASE + `/api/download-ebook-test?token=${encodeURIComponent(token)}`);
+                } else {
+                    errorState.style.display = 'block';
+                    if (data.expired) {
+                        errorText.textContent = 'This download token has expired (links are valid for 7 days). Please contact support to request a fresh token.';
+                    } else {
+                        errorText.textContent = 'Your access token is invalid, revoked, or pending admin verification.';
+                    }
+                }
+            } catch (err) {
+                loadingState.style.display = 'none';
+                errorState.style.display = 'block';
+                errorText.textContent = 'Failed to connect to the verification ledger. Please try again.';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Pending Verification | Mirror 5000</title>
+    <link rel="stylesheet" href="../mirror-style.css?v=1.0.6">
+    <style>
+        .verification-box {
+            border: 3px solid var(--ink);
+            border-radius: 8px;
+            padding: 2.5rem;
+            background-color: var(--paper-card);
+            margin: 2.5rem 0;
+            box-shadow: var(--shadow-flat);
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .cashtag-stamp {
+            display: inline-block;
+            border: 3px double var(--stamp-red);
+            color: var(--stamp-red);
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            padding: 10px 20px;
+            margin: 1.5rem 0;
+            transform: rotate(-3deg);
+            text-transform: uppercase;
+        }
+        .instruction-step {
+            text-align: left;
+            margin: 1.5rem 0;
+            background-color: rgba(209, 161, 78, 0.05);
+            border-left: 4px solid var(--gold);
+            padding: 15px 20px;
+            border-radius: 0 6px 6px 0;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="notebook-container" style="text-align: center;">
+        
+        <header>
+            <div class="stamp-badge" style="border-color: var(--gold); color: var(--gold); transform: rotate(-2deg);">Awaiting Verification</div>
+            <div class="mirror-tag">Mirror 5000</div>
+        </header>
+
+        <section class="success-layout" style="align-items: center;">
+            
+            <div class="verification-box">
+                <h2 style="font-family: var(--font-display); font-size: 2.4rem; color: var(--ink);">Verification Initiated</h2>
+                
+                <!-- Cash App Dynamic Instructions Area -->
+                <div id="cashapp-instructions" style="display: none;">
+                    <p style="font-size: 1.1rem; line-height: 1.5; margin-top: 1rem;">
+                        To complete your purchase of <strong>Trillion Dollar Miracle</strong>, please send your payment via Cash App:
+                    </p>
+                    
+                    <div class="cashtag-stamp" id="cashtag-value">$KENDREN</div>
+                    
+                    <div class="instruction-step">
+                        <strong>Instructions:</strong><br>
+                        1. Open Cash App on your mobile device.<br>
+                        2. Send <strong id="cashapp-amount">$27</strong> to the cashtag above.<br>
+                        3. <strong style="color: var(--stamp-red);">CRITICAL:</strong> Put your email address (<strong class="user-email-placeholder">loading...</strong>) in the payment note so we can locate your record.
+                    </div>
+                </div>
+
+                <!-- Default Pending copy -->
+                <div id="default-pending-copy" style="margin-top: 1rem;">
+                    <p style="font-size: 1.15rem; line-height: 1.6; color: var(--shadow-charcoal);">
+                        Your purchase is being verified by our ledger system. If you paid, your secure download link will be generated and dispatched to your email shortly.
+                    </p>
+                </div>
+
+                <div class="accent-line" style="border-top: 2px dashed var(--ink); margin: 2rem 0;"></div>
+
+                <p style="font-family: var(--font-handwritten); font-size: 1.6rem; color: var(--accent-purple); line-height: 1.4;">
+                    "The transaction is registered. Once verified, the Wealth Mirror unlocks in the outbox room."
+                </p>
+
+                <div style="margin-top: 2rem;">
+                    <a href="../mirror5000-test" class="btn-stamp" style="font-size: 0.95rem; text-decoration: none;">
+                        Return to Homepage
+                    </a>
+                </div>
+            </div>
+
+        </section>
+
+        <footer>
+            <div class="footer-social-links">
+                <span>By Kendren Cornish</span>
+                <a href="https://kendren.us" target="_blank">kendren.us</a>
+                <a href="mailto:TACYHON@proton.me">TACYHON@proton.me</a>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://localhost:3005'
+            : '';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const emailParam = urlParams.get('email') || sessionStorage.getItem('mirror5000_email') || 'your email';
+
+            document.querySelectorAll('.user-email-placeholder').forEach(el => {
+                el.textContent = emailParam;
+            });
+
+            try {
+                const res = await fetch(API_BASE + '/api/trillion-info-test');
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+
+                if (data.paymentMode === 'manual') {
+                    document.getElementById('cashapp-instructions').style.display = 'block';
+                    document.getElementById('cashtag-value').textContent = data.cashappTag;
+                    document.getElementById('cashapp-amount').textContent = `$${data.activePrice}`;
+                    
+                    if (data.manualInstructions && data.manualInstructions.trim() !== '') {
+                        document.querySelector('.instruction-step').innerHTML = `
+                            <strong>Instructions:</strong><br>
+                            ${data.manualInstructions.replace(/\n/g, '<br>')}
+                        `;
+                    }
+                }
+            } catch (err) {
+                console.error("Error loading pending info:", err);
+            }
+        });
+    </script>
+</body>
+</html>

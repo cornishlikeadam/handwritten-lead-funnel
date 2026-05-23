@@ -664,24 +664,24 @@ async function dispatchEmails(subscriber) {
         <title>Your Mirror 5000 Entry</title>
         <style>
             body {
-                background-color: #F4EEDC; /* Cream */
-                color: #171717; /* Ink */
+                background-color: #E9E4D9; /* Warm sand/concrete cream */
+                color: #2E2D32; /* Deep slate charcoal ink */
                 font-family: 'Courier New', Courier, monospace, sans-serif;
                 padding: 30px;
                 margin: 0;
             }
             .card {
-                background-color: #F7F1E1;
-                border: 3px solid #171717;
+                background-color: #F2EDE0; /* Elevated card cream */
+                border: 3px solid #2E2D32;
                 border-radius: 8px;
                 max-width: 600px;
                 margin: 0 auto;
                 padding: 30px;
-                box-shadow: 6px 6px 0px #2B2B2B;
+                box-shadow: 6px 6px 0px #1D1C20; /* flat slate shadow */
             }
             .stamp-logo {
-                border: 3px double #B12A22; /* Stamp Red */
-                color: #B12A22;
+                border: 3px double #C96F6B; /* Muted rose stamp pink */
+                color: #C96F6B;
                 font-weight: bold;
                 padding: 8px 16px;
                 display: inline-block;
@@ -692,24 +692,24 @@ async function dispatchEmails(subscriber) {
                 letter-spacing: 2px;
             }
             .accent-line {
-                border-top: 2px dashed #6E8BAA;
+                border-top: 2px dashed #8F7EA6; /* Soft lavender/purple */
                 margin: 20px 0;
             }
             .highlight {
-                background-color: rgba(196, 154, 69, 0.15); /* Muted gold */
+                background-color: rgba(209, 161, 78, 0.15); /* Mustard gold highlight */
                 padding: 2px 6px;
                 font-weight: bold;
             }
             .btn {
                 display: inline-block;
-                background-color: #B12A22;
-                color: #F4EEDC !important;
+                background-color: #C96F6B; /* Muted rose stamp pink */
+                color: #E9E4D9 !important;
                 text-decoration: none;
                 font-weight: bold;
                 padding: 12px 24px;
-                border: 2px solid #171717;
+                border: 2px solid #2E2D32;
                 border-radius: 4px;
-                box-shadow: 4px 4px 0px #171717;
+                box-shadow: 4px 4px 0px #1D1C20;
                 text-transform: uppercase;
             }
         </style>
@@ -760,11 +760,11 @@ async function dispatchEmails(subscriber) {
     <head>
         <meta charset="utf-8">
         <style>
-            body { background-color: #F4EEDC; color: #171717; font-family: monospace; padding: 20px; }
-            .card { background-color: #ffffff; border: 2px solid #171717; padding: 20px; }
-            h3 { color: #B12A22; }
+            body { background-color: #E9E4D9; color: #2E2D32; font-family: monospace; padding: 20px; }
+            .card { background-color: #F2EDE0; border: 2px solid #2E2D32; padding: 20px; box-shadow: 4px 4px 0px #1D1C20; }
+            h3 { color: #C96F6B; margin-top: 0; }
             table { width: 100%; border-collapse: collapse; }
-            td { padding: 8px; border-bottom: 1px solid #ddd; }
+            td { padding: 8px; border-bottom: 1px solid rgba(46, 45, 50, 0.15); }
             td.label { font-weight: bold; width: 220px; }
         </style>
     </head>

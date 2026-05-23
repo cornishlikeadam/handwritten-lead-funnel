@@ -4,23 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stamps Locked | Mirror 5000 Confirmation</title>
-    <link rel="stylesheet" href="../mirror-style.css?v=1.0.3">
+    <link rel="stylesheet" href="mirror-style.css?v=1.0.6">
 </head>
 <body>
 
     <div class="notebook-container" style="text-align: center;">
-        
+
         <header>
             <div class="stamp-badge" style="border-color: var(--success-green); color: var(--success-green); transform: rotate(2deg);">Locked In</div>
             <div class="mirror-tag">Mirror 5000</div>
         </header>
 
         <section class="success-layout">
-            
+
             <div class="stamp-effect">VISIBLE</div>
-            
+
             <h1 class="hero-heading" style="font-size: 2.5rem; margin-top: 1rem;">Passport Authorized</h1>
-            
+
             <p class="hero-subheading" style="max-width: 600px; margin: 0 auto;">
                 Your entry was registered in the Mirror 5000 field database. Your copy of the manual is being dispatched to your email.
             </p>
@@ -28,7 +28,7 @@
             <!-- Dynamic alignment recap -->
             <div class="notebook-card" style="text-align: left; max-width: 600px; width: 100%; border-left: 5px solid var(--accent-purple);">
                 <div class="card-title" style="font-size: 1.4rem; margin-bottom: 1rem;">Your Visibility Framework</div>
-                
+
                 <p style="font-weight: 500; font-size: 0.95rem; text-transform: uppercase; color: var(--shadow-charcoal);">1. Identity sentence:</p>
                 <div class="compiler-recap-box" id="success-identity-sentence" style="font-size: 1.5rem; margin-top: 5px; margin-bottom: 1.5rem;">
                     Loading your profile...
@@ -46,7 +46,7 @@
                 <p style="font-size: 0.95rem; line-height: 1.4; margin-bottom: 1.5rem;">
                     If emails are slow, blocked, or caught in spam, you can trigger an instant download of the PDF field manual manually:
                 </p>
-                <a href="../assets/seen-until-believed-sacred-tech-edition.pdf" download class="btn-stamp primary" style="text-decoration: none; width: 100%; justify-content: center;">
+                <a href="assets/seen-until-believed-sacred-tech-edition.pdf" download class="btn-stamp primary" style="text-decoration: none; width: 100%; justify-content: center;">
                     Download Manual PDF
                 </a>
             </div>
@@ -73,6 +73,16 @@
 
         </section>
 
+        <!-- Live Signup Feed (Obfuscated) -->
+        <div class="recent-ticker-container" id="recent-ticker-container">
+            <div class="recent-ticker-title">Live Field Feed: Recent Authorizations</div>
+            <div class="recent-ticker-wrap">
+                <div class="recent-ticker-move" id="recent-ticker-move">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </div>
+
         <!-- Footer -->
         <footer>
             <div class="footer-social-links">
@@ -82,14 +92,21 @@
                 <a href="https://instagram.com/FRU1T4U" target="_blank">@FRU1T4U</a>
             </div>
             <p style="font-size: 0.85rem; opacity: 0.7;">
-                <a href="../mirror5000" style="color: var(--ink); text-decoration: none; font-weight: bold;">← Return to mirror5000</a>
+                <a href="mirror5000.html" style="color: var(--ink); text-decoration: none; font-weight: bold;">← Return to mirror5000</a>
             </p>
+            <div style="margin-top: 1.5rem;">
+                <button type="button" class="ledger-trigger" id="btn-ledger-trigger" title="System Ledger" style="font-size: 2.2rem; background: transparent; border: none; cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onclick="window.location.href='mirror5000.html?showLedger=true'">🧸</button>
+            </div>
         </footer>
 
     </div>
 
     <!-- Script to render dynamic values -->
     <script>
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://localhost:3005'
+            : 'https://handwritten-lead-funnel.vercel.app';
+
         document.addEventListener('DOMContentLoaded', () => {
             const identity = sessionStorage.getItem('mirror5000_identity_sentence');
             const stakes = sessionStorage.getItem('mirror5000_stakes_statement');
@@ -98,14 +115,14 @@
             if (identity) {
                 document.getElementById('success-identity-sentence').textContent = identity;
             } else {
-                document.getElementById('success-identity-sentence').textContent = 
+                document.getElementById('success-identity-sentence').textContent =
                     "I am a creator trying to build momentum by documenting my daily growth.";
             }
 
             if (stakes) {
                 document.getElementById('success-stakes-statement').textContent = stakes;
             } else {
-                document.getElementById('success-stakes-statement').textContent = 
+                document.getElementById('success-stakes-statement').textContent =
                     "For the next 30 days, I am choosing visibility over hiding. If I complete this, I gain clarity. If I quit, I stay stuck in the same routine.";
             }
 
@@ -139,7 +156,7 @@
 
             async function submitWaitlist(targetEmail) {
                 try {
-                    const response = await fetch('/api/waitlist', {
+                    const response = await fetch(API_BASE + '/api/waitlist', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email: targetEmail })
@@ -152,6 +169,89 @@
                     alert(err.message || 'Error joining waitlist.');
                 }
             }
+
+            // Generate over 100 realistic creator profiles for the marquee ticker fallback/padding
+            function generateMockCreators() {
+                const names = [
+                    "Kendren", "Tachyon", "Aria", "Julian", "Marcus", "Sienna", "Elena", "Liam", "Sophia", "Zavier",
+                    "Chloe", "Devon", "Amara", "Kai", "Maya", "Silas", "Freya", "Jonah", "Leila", "Dante",
+                    "Zoe", "Luca", "Nova", "Jasper", "Zara", "Tristan", "Naomi", "Ezra", "Iris", "Felix",
+                    "Clara", "Leo", "Ruby", "Silas", "Ada", "Jude", "Gwen", "Kaelen", "Fiona", "Cassian",
+                    "Seraphina", "Callum", "Lyra", "Rowan", "Evangeline", "Beckett", "Isla", "Gideon", "Maeve", "Cyrus",
+                    "Ophelia", "Lachlan", "Astrid", "Atticus", "Genevieve", "Rory", "Aurelia", "Soren", "Elowen", "Cassius",
+                    "Thalia", "Kian", "Mirabelle", "Killian", "Freya", "Tobias", "Nadia", "Ronan", "Imogen", "Balthazar"
+                ];
+                const domains = ["gmail.com", "proton.me", "substack.com", "beehiiv.com", "yahoo.com", "icloud.com", "outlook.com", "hey.com"];
+
+                const mockList = [];
+                for (let i = 0; i < 120; i++) {
+                    const baseName = names[i % names.length];
+                    const nameSuffix = (i >= names.length) ? String(i) : "";
+                    const fullName = baseName + nameSuffix;
+
+                    const domain = domains[(i * 3) % domains.length];
+                    const emailPrefix = baseName.toLowerCase() + (i % 7 ? String(i % 100) : "");
+
+                    const visibleNameLen = Math.min(2, fullName.length);
+                    const obfuscatedName = fullName.substring(0, visibleNameLen) + '***';
+
+                    const visibleEmailLen = Math.min(2, emailPrefix.length);
+                    const obfuscatedEmail = emailPrefix.substring(0, visibleEmailLen) + '***@' + domain;
+
+                    mockList.push({ name: obfuscatedName, email: obfuscatedEmail });
+                }
+                return mockList;
+            }
+
+            // Signup ticker feed
+            async function loadRecentSignups() {
+                const tickerMove = document.getElementById('recent-ticker-move');
+                if (!tickerMove) return;
+
+                const mockCreators = generateMockCreators();
+
+                try {
+                    const response = await fetch(API_BASE + '/api/subscribers/recent');
+                    if (!response.ok) throw new Error('Failed to load recent signups');
+                    const data = await response.json();
+
+                    // Merge real signups at the front, followed by mock creators to pad it
+                    const merged = [...data];
+                    mockCreators.forEach(mock => {
+                        if (merged.length < 120) {
+                            merged.push(mock);
+                        }
+                    });
+
+                    renderTicker(merged);
+                } catch (err) {
+                    console.warn("Could not connect to live submissions API, falling back to mock logs:", err);
+                    renderTicker(mockCreators);
+                }
+            }
+
+            function renderTicker(items) {
+                const tickerMove = document.getElementById('recent-ticker-move');
+                tickerMove.innerHTML = items.map(s => {
+                    return `<div class="ticker-item">
+                        <span class="highlight-name">${escapeHTML(s.name)}</span>
+                        (<span class="highlight-email">${escapeHTML(s.email)}</span>)
+                        just authorized mirror passport entry
+                    </div>`;
+                }).join(' &nbsp;&bull;&nbsp; ');
+            }
+
+            function escapeHTML(str) {
+                if (!str) return '';
+                return str
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
+            loadRecentSignups();
         });
     </script>
 </body>

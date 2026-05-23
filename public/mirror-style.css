@@ -2,17 +2,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;700&family=Permanent+Marker&family=Reenie+Beanie&family=Space+Grotesk:wght@400;500;700&family=Patrick+Hand&display=swap');
 
 :root {
-    /* Color Palette */
-    --paper-bg: #F4EEDC;
-    --paper-card: #F7F1E1;
-    --ink: #171717;
-    --stamp-red: #B12A22;
-    --gold: #C49A45;
-    --graph-blue: rgba(110, 139, 170, 0.18);
-    --shadow-charcoal: #2B2B2B;
-    --accent-purple: #7C4DFF;
-    --success-green: #2ecc71;
-    
+    /* Book Cover Inspired Color Palette (Warm Sand Cream & Muted Charcoal) */
+    --paper-bg: #E9E4D9; /* Warm sand/concrete cream */
+    --paper-card: #F2EDE0; /* Lighter elevated paper card */
+    --ink: #2E2D32; /* Deep slate charcoal ink */
+    --stamp-red: #C96F6B; /* Muted rose pink */
+    --gold: #D1A14E; /* Mustard yellow/ochre */
+    --graph-blue: rgba(110, 139, 170, 0.12); /* Faint graph blue lines */
+    --shadow-charcoal: #1D1C20; /* Slate shadow */
+    --accent-purple: #8F7EA6; /* Soft lavender/purple */
+    --success-green: #6C9482; /* Sage green */
+
     /* Fonts */
     --font-display: 'Bebas Neue', sans-serif;
     --font-heading: 'Permanent Marker', cursive;
@@ -20,7 +20,7 @@
     --font-doodle: 'Reenie Beanie', cursive;
     --font-body: 'Space Grotesk', sans-serif;
     --font-accents: 'Patrick Hand', cursive;
-    
+
     /* Borders & Shadows */
     --border-ink: 3px solid var(--ink);
     --shadow-flat: 5px 5px 0px var(--shadow-charcoal);
@@ -35,8 +35,8 @@
 }
 
 body {
-    background-color: #2B2B2B; /* Deep charcoal background for contrast */
-    color: var(--ink);
+    background-color: #242327; /* Dark slate background to let the sandy book page pop */
+    color: #A09C94; /* Light gray text for readable default text outside the notebook card */
     font-family: var(--font-body);
     min-height: 100vh;
     padding: 3rem 1.5rem;
@@ -46,11 +46,12 @@ body {
 }
 
 .notebook-container {
+    color: var(--ink); /* Deep slate charcoal ink text inside the workbook sand page */
     max-width: 900px;
     width: 100%;
     margin: 0 auto;
     background-color: var(--paper-bg);
-    background-image: 
+    background-image:
         linear-gradient(var(--graph-blue) 1px, transparent 1px),
         linear-gradient(90deg, var(--graph-blue) 1px, transparent 1px);
     background-size: 24px 24px;
@@ -525,7 +526,7 @@ ADMIN LEDGER DRAWER
     border: var(--border-ink);
     border-radius: 8px;
     padding: 2rem;
-    background-color: #ffffff;
+    background-color: var(--paper-card);
     box-shadow: var(--shadow-flat);
     animation: notebookFade 0.3s ease-out forwards;
 }
@@ -594,7 +595,7 @@ ADMIN LEDGER DRAWER
 }
 
 .ledger-table tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: rgba(255, 255, 255, 0.03);
 }
 
 /* Outbox / Retry section styling */
@@ -612,7 +613,7 @@ ADMIN LEDGER DRAWER
     border-radius: 6px;
     padding: 10px 15px;
     margin-bottom: 10px;
-    background-color: #fffaf0;
+    background-color: var(--paper-bg);
     box-shadow: 2px 2px 0 var(--ink);
 }
 
@@ -717,4 +718,105 @@ footer {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Dynamic Signup Ticker Feed Styling */
+.recent-ticker-container {
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--paper-card);
+    border: 2.5px solid var(--ink);
+    border-radius: 6px;
+    padding: 0.8rem 0;
+    margin-top: 3rem;
+    box-shadow: var(--shadow-flat);
+    position: relative;
+}
+
+.recent-ticker-title {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    color: var(--stamp-red);
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 0.6rem;
+    letter-spacing: 1px;
+}
+
+.recent-ticker-wrap {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+}
+
+.recent-ticker-move {
+    display: inline-block;
+    white-space: nowrap;
+    padding-left: 100%;
+    animation: ticker-slide 25s linear infinite;
+}
+
+.recent-ticker-move:hover {
+    animation-play-state: paused;
+}
+
+.ticker-item {
+    display: inline-block;
+    padding: 0 2rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: var(--ink);
+}
+
+.ticker-item span.highlight-name {
+    color: var(--accent-purple);
+}
+
+.ticker-item span.highlight-email {
+    color: var(--gold);
+}
+
+@keyframes ticker-slide {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+    100% {
+        transform: translate3d(-100%, 0, 0);
+    }
+}
+
+/* Ledger tabbed layout styles */
+.ledger-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px dashed var(--ink);
+    padding-bottom: 8px;
+}
+
+.ledger-tab-btn {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    padding: 6px 16px;
+    border: 2px solid transparent;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+
+.ledger-tab-btn.active {
+    border-color: var(--ink);
+    background-color: var(--paper-card);
+    font-weight: bold;
+    box-shadow: 3px 3px 0px var(--shadow-charcoal);
+    transform: rotate(-1deg);
+}
+
+.ledger-tab-content {
+    animation: notebookFade 0.3s ease-out forwards;
 }

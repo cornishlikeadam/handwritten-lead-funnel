@@ -1,5 +1,19 @@
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3005'
+    : 'https://handwritten-lead-funnel.vercel.app';
+
 document.addEventListener('DOMContentLoaded', () => {
-    
+
+    // Prefill name & email from sessionStorage if available (e.g. from homepage popup)
+    const cachedName = sessionStorage.getItem('mirror5000_first_name');
+    const cachedEmail = sessionStorage.getItem('mirror5000_email');
+    if (cachedName && document.getElementById('input-name')) {
+        document.getElementById('input-name').value = cachedName;
+    }
+    if (cachedEmail && document.getElementById('input-email')) {
+        document.getElementById('input-email').value = cachedEmail;
+    }
+
     // -------------------------------------------------------------
     // 1. Live Compilers / Sentence Builders
     // -------------------------------------------------------------
@@ -37,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Choice Cards (Radios / Checkboxes)
     // -------------------------------------------------------------
     const choiceCards = document.querySelectorAll('.grid-choice-card');
-    
+
     // Initialize checked card states
     choiceCards.forEach(card => {
         const input = card.querySelector('input');
@@ -267,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch('/api/subscribe', {
+                const response = await fetch(API_BASE + '/api/subscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -280,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // Redirect on success
-                window.location.href = result.redirectUrl || '/mirror5000/confirmed';
+                window.location.href = 'confirmed.html';
 
             } catch (err) {
                 showError(err.message || 'An error occurred. Please try again.');
@@ -303,19 +317,38 @@ document.addEventListener('DOMContentLoaded', () => {
     let adminToken = sessionStorage.getItem('mirror5000_admin_token') || null;
     let fullSubscriberList = [];
 
+    function verifyBearCodeAndOpenLedger() {
+        const bearCode = prompt("Enter Bear Code (🧸):");
+        if (bearCode !== "9938") {
+            alert("Incorrect Bear Code.");
+            return;
+        }
+
+        // Bear Code matches, now verify/open ledger secret key
+        if (adminToken) {
+            adminDrawer.style.display = 'block';
+            fetchAdminStats();
+        } else {
+            loginModal.style.display = 'flex';
+            if (adminPassInput) adminPassInput.focus();
+        }
+    }
+
     // Trigger Ledger Drawer
     if (ledgerTrigger) {
         ledgerTrigger.addEventListener('click', () => {
             if (adminDrawer.style.display === 'block') {
                 adminDrawer.style.display = 'none';
-            } else if (adminToken) {
-                adminDrawer.style.display = 'block';
-                fetchAdminStats();
             } else {
-                loginModal.style.display = 'flex';
-                adminPassInput.focus();
+                verifyBearCodeAndOpenLedger();
             }
         });
+    }
+
+    // Check if showLedger is passed in URL query params
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('showLedger') === 'true') {
+        verifyBearCodeAndOpenLedger();
     }
 
     if (loginCancel) {
@@ -339,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!password) return alert('Please enter key password.');
 
         try {
-            const response = await fetch('/api/admin/login', {
+            const response = await fetch(API_BASE + '/api/admin/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password })
@@ -351,11 +384,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             adminToken = result.token;
             sessionStorage.setItem('mirror5000_admin_token', adminToken);
-            
+
             loginModal.style.display = 'none';
             adminDrawer.style.display = 'block';
             adminPassInput.value = '';
-            
+
             fetchAdminStats();
 
         } catch (err) {
@@ -370,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!adminToken) return;
 
         try {
-            const response = await fetch('/api/admin/stats', {
+            const response = await fetch(API_BASE + '/api/admin/stats', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${adminToken}` }
             });
@@ -419,18 +452,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         tbody.innerHTML = items.map(item => {
             const dateStr = new Date(item.created_at).toLocaleDateString();
+
+            // Format contact details
+            const emailHtml = item.email ? `<div><strong>Email:</strong> ${escapeHTML(item.email)}</div>` : '';
+            const phoneHtml = item.phone ? `<div><strong>Phone:</strong> ${escapeHTML(item.phone)}</div>` : '';
+            const cityHtml = item.city_state ? `<div><strong>Loc:</strong> ${escapeHTML(item.city_state)}</div>` : '';
+            const contactInfo = `${emailHtml}${phoneHtml}${cityHtml}` || 'N/A';
+
+            // Format social handles
+            const instaHtml = item.instagram_handle ? `<div><strong>Insta:</strong> ${escapeHTML(item.instagram_handle)}</div>` : '';
+            const tiktokHtml = item.tiktok_handle ? `<div><strong>TikTok:</strong> ${escapeHTML(item.tiktok_handle)}</div>` : '';
+            const ytHtml = item.youtube_url ? `<div><strong>YT:</strong> <a href="${item.youtube_url.startsWith('http') ? item.youtube_url : 'https://' + item.youtube_url}" target="_blank" style="color: var(--accent-purple); word-break: break-all;">Link</a></div>` : '';
+            const socialHandles = `${instaHtml}${tiktokHtml}${ytHtml}` || 'None';
+
             return `
                 <tr>
                     <td>${dateStr}</td>
                     <td><strong>${escapeHTML(item.first_name)}</strong></td>
-                    <td>${escapeHTML(item.email)}</td>
+                    <td style="font-size: 0.85rem; line-height: 1.3;">${contactInfo}</td>
+                    <td style="font-size: 0.85rem; line-height: 1.3;">${socialHandles}</td>
                     <td style="font-size: 0.85rem; line-height: 1.3;">
                         ${escapeHTML(item.generated_identity_sentence)}<br>
                         <span style="color: var(--stamp-red); font-style: italic;">"${escapeHTML(item.challenge_30_day)}"</span>
                     </td>
-                    <td style="text-transform: capitalize;">${escapeHTML(item.biggest_obstacle)}</td>
-                    <td style="text-transform: capitalize;">${escapeHTML(item.monetization_route)}</td>
-                    <td style="font-size: 0.8rem;">
+                    <td style="font-size: 0.85rem; line-height: 1.3;">
+                        <strong>Obstacle:</strong> ${escapeHTML(item.biggest_obstacle)}<br>
+                        <strong>Route:</strong> ${escapeHTML(item.monetization_route)}
+                    </td>
+                    <td style="font-size: 0.8rem; white-space: nowrap;">
                         Sub Welcome: <strong style="color: ${item.email_sent_status === 'sent' ? 'var(--success-green)' : 'var(--stamp-red)'}">${item.email_sent_status}</strong><br>
                         Admin Alert: <strong style="color: ${item.admin_notified_status === 'sent' ? 'var(--success-green)' : 'var(--stamp-red)'}">${item.admin_notified_status}</strong>
                     </td>
@@ -470,7 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!adminToken) return;
 
         try {
-            const response = await fetch('/api/admin/retry-email', {
+            const response = await fetch(API_BASE + '/api/admin/retry-email', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -584,4 +633,98 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
     }
+
+    // Live Signups Ticker Marquee Initialization
+    const tickerMove = document.getElementById('recent-ticker-move');
+    if (tickerMove) {
+        loadRecentSignups();
+    }
+
+    async function loadRecentSignups() {
+        const mockCreators = generateMockCreators();
+        try {
+            const response = await fetch(API_BASE + '/api/subscribers/recent');
+            if (!response.ok) throw new Error('Failed to load recent signups');
+            const data = await response.json();
+
+            // Merge real signups at the front, followed by mock creators to pad it
+            const merged = [...data];
+            mockCreators.forEach(mock => {
+                if (merged.length < 120) {
+                    merged.push(mock);
+                }
+            });
+
+            renderTicker(merged);
+        } catch (err) {
+            console.warn("Could not connect to live submissions API, falling back to mock logs:", err);
+            renderTicker(mockCreators);
+        }
+    }
+
+    function renderTicker(items) {
+        if (!tickerMove) return;
+        tickerMove.innerHTML = items.map(s => {
+            return `<div class="ticker-item">
+                <span class="highlight-name">${escapeHTML(s.name)}</span>
+                (<span class="highlight-email">${escapeHTML(s.email)}</span>)
+                just authorized mirror passport entry
+            </div>`;
+        }).join(' &nbsp;&bull;&nbsp; ');
+    }
+
+    function generateMockCreators() {
+        const names = [
+            "Kendren", "Tachyon", "Aria", "Julian", "Marcus", "Sienna", "Elena", "Liam", "Sophia", "Zavier",
+            "Chloe", "Devon", "Amara", "Kai", "Maya", "Silas", "Freya", "Jonah", "Leila", "Dante",
+            "Zoe", "Luca", "Nova", "Jasper", "Zara", "Tristan", "Naomi", "Ezra", "Iris", "Felix",
+            "Clara", "Leo", "Ruby", "Ada", "Jude", "Gwen", "Kaelen", "Fiona", "Cassian", "Seraphina",
+            "Callum", "Lyra", "Rowan", "Evangeline", "Beckett", "Isla", "Gideon", "Maeve", "Cyrus",
+            "Ophelia", "Lachlan", "Astrid", "Atticus", "Genevieve", "Rory", "Aurelia", "Soren", "Elowen",
+            "Cassius", "Thalia", "Kian", "Mirabelle", "Killian", "Tobias", "Nadia", "Ronan", "Imogen",
+            "Balthazar", "Axiom", "Zephyr", "Orion", "Lysander", "Calliope", "Peregrine", "Elara", "Rohan",
+            "Evander", "Keanu", "Samira", "Callista", "Castor", "Echo", "Faye", "Griffin", "Helix", "Indigo",
+            "Osiris", "Phoenix", "Quest", "River", "Sage", "Sol", "Titus", "Vesper", "Winter", "Xanthe",
+            "Yael", "Zenith", "Atlas", "Caspian", "Dax", "Harlow", "Idris", "Jett", "Koda", "Lennox",
+            "Magnus", "Nola", "Opal", "Priya", "Remy", "Salem", "Tatum", "Wilder", "Zuri"
+        ];
+        const domains = ["gmail.com", "proton.me", "substack.com", "beehiiv.com", "yahoo.com", "icloud.com", "outlook.com", "hey.com"];
+
+        const mockList = [];
+        for (let i = 0; i < 120; i++) {
+            const baseName = names[i % names.length];
+            const nameSuffix = (i >= names.length) ? String(i) : "";
+            const fullName = baseName + nameSuffix;
+
+            const domain = domains[(i * 3) % domains.length];
+            const emailPrefix = baseName.toLowerCase() + (i % 7 ? String(i % 100) : "");
+
+            const visibleNameLen = Math.min(2, fullName.length);
+            const obfuscatedName = fullName.substring(0, visibleNameLen) + '***';
+
+            const visibleEmailLen = Math.min(2, emailPrefix.length);
+            const obfuscatedEmail = emailPrefix.substring(0, visibleEmailLen) + '***@' + domain;
+
+            mockList.push({ name: obfuscatedName, email: obfuscatedEmail });
+        }
+        return mockList;
+    }
+
+    // Admin Ledger Tab Switching
+    const tabButtons = document.querySelectorAll('.ledger-tab-btn');
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const tabId = btn.getAttribute('data-tab');
+            if (tabId === 'subscribers') {
+                document.getElementById('tab-subscribers').style.display = 'block';
+                document.getElementById('tab-outbox').style.display = 'none';
+            } else {
+                document.getElementById('tab-subscribers').style.display = 'none';
+                document.getElementById('tab-outbox').style.display = 'block';
+            }
+        });
+    });
 });

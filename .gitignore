@@ -6,3 +6,4 @@ email_outbox.json
 .DS_Store
 .vercel/
 .vercel
+.env*.local

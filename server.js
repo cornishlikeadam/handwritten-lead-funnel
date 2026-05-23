@@ -5,10 +5,12 @@ const cors = require('cors');
 const nodemailer = require('nodemailer');
 const { Pool } = require('pg');
 const crypto = require('crypto');
+require('dotenv').config({ path: path.join(__dirname, '.env.local') });
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3005;
+const isVercel = process.env.VERCEL === '1' || !!process.env.NOW_BUILDER || !!process.env.VERCEL_ENV;
 
 // Middleware
 app.use(cors());
@@ -37,7 +39,6 @@ app.get('/mirror5000/confirmed', (req, res) => {
 app.use(express.static(path.join(__dirname, 'public'), { dotfiles: 'allow' }));
 
 // Database File Paths (Fallback JSON)
-const isVercel = process.env.VERCEL === '1' || !!process.env.NOW_BUILDER;
 const DB_FILE = isVercel ? '/tmp/subscribers.json' : path.join(__dirname, 'subscribers.json');
 const OUTBOX_DB_FILE = isVercel ? '/tmp/email_outbox.json' : path.join(__dirname, 'email_outbox.json');
 const OUTBOX_DIR = isVercel ? '/tmp/outbox' : path.join(__dirname, 'outbox');
@@ -50,72 +51,139 @@ if (!isVercel && !fs.existsSync(OUTBOX_DIR)) {
 }
 
 // Database Connection & Helper Functions
-const usePostgres = !!process.env.DATABASE_URL;
+const postgresUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL;
+const usePostgres = !!postgresUrl;
+const allowEphemeralFallback = process.env.ALLOW_EPHEMERAL_FALLBACK === 'true';
 let pool = null;
 
 if (usePostgres) {
     console.log("PostgreSQL Database URL detected. Preparing connection pool...");
-    const isLocal = process.env.DATABASE_URL.includes('localhost') || process.env.DATABASE_URL.includes('127.0.0.1');
+    const isLocal = postgresUrl.includes('localhost') || postgresUrl.includes('127.0.0.1');
     pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
+        connectionString: postgresUrl,
         ssl: isLocal ? false : { rejectUnauthorized: false }
     });
+}
+
+function getPersistenceStatus() {
+    if (usePostgres) {
+        return { mode: 'postgres', permanent: true, configured: true };
+    }
+
+    if (isVercel && !allowEphemeralFallback) {
+        return {
+            mode: 'unconfigured',
+            permanent: false,
+            configured: false,
+            message: 'DATABASE_URL or POSTGRES_URL is required in Vercel production to permanently store subscribers.'
+        };
+    }
+
+    return {
+        mode: isVercel ? 'ephemeral-json' : 'local-json',
+        permanent: !isVercel,
+        configured: true
+    };
+}
+
+function assertWritablePersistence() {
+    const status = getPersistenceStatus();
+    if (!status.configured) {
+        const err = new Error(status.message);
+        err.statusCode = 503;
+        throw err;
+    }
+}
+
+function cleanText(value) {
+    if (value === undefined || value === null) return null;
+    const text = String(value).trim();
+    return text.length ? text : null;
+}
+
+function normalizeEmail(value) {
+    const email = cleanText(value);
+    return email ? email.toLowerCase() : null;
+}
+
+function asBoolean(value) {
+    return value === true || value === 'true' || value === 'on' || value === '1';
+}
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function getPublicBaseUrl() {
+    if (process.env.PUBLIC_BASE_URL) return process.env.PUBLIC_BASE_URL.replace(/\/$/, '');
+    if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+    if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+    return `http://localhost:${PORT}`;
 }
 
 // Initialize tables or files
 async function dbInit() {
     if (usePostgres) {
-        try {
-            await pool.query(`
-                CREATE TABLE IF NOT EXISTS subscribers (
-                    id VARCHAR(255) PRIMARY KEY,
-                    created_at TIMESTAMP DEFAULT NOW(),
-                    first_name VARCHAR(255),
-                    email VARCHAR(255) NOT NULL UNIQUE,
-                    instagram_handle VARCHAR(255),
-                    tiktok_handle VARCHAR(255),
-                    youtube_url TEXT,
-                    phone VARCHAR(255),
-                    city_state VARCHAR(255),
-                    identity_type VARCHAR(255),
-                    goal TEXT,
-                    documenting TEXT,
-                    generated_identity_sentence TEXT,
-                    challenge_30_day TEXT,
-                    upside VARCHAR(255),
-                    downside VARCHAR(255),
-                    generated_stake_statement TEXT,
-                    audience_size VARCHAR(255),
-                    primary_platform VARCHAR(255),
-                    monetization_route VARCHAR(255),
-                    biggest_obstacle VARCHAR(255),
-                    consent_opt_in BOOLEAN DEFAULT FALSE,
-                    source_page VARCHAR(255) DEFAULT 'mirror5000',
-                    email_sent_status VARCHAR(255) DEFAULT 'pending',
-                    admin_notified_status VARCHAR(255) DEFAULT 'pending'
-                );
-            `);
-            await pool.query(`
-                ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS waitlist_kit BOOLEAN DEFAULT FALSE;
-            `);
-            await pool.query(`
-                CREATE TABLE IF NOT EXISTS email_outbox (
-                    id VARCHAR(255) PRIMARY KEY,
-                    created_at TIMESTAMP DEFAULT NOW(),
-                    recipient_email VARCHAR(255) NOT NULL,
-                    email_type VARCHAR(255),
-                    subject VARCHAR(255),
-                    body TEXT,
-                    status VARCHAR(255) DEFAULT 'pending',
-                    error_message TEXT,
-                    retry_count INTEGER DEFAULT 0
-                );
-            `);
-            console.log("PostgreSQL tables checked and ready.");
-        } catch (err) {
-            console.error("Failed to check/create PostgreSQL tables:", err);
-        }
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS subscribers (
+                id VARCHAR(255) PRIMARY KEY,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                email VARCHAR(320) NOT NULL UNIQUE
+            );
+        `);
+        await pool.query(`
+            ALTER TABLE subscribers
+                ADD COLUMN IF NOT EXISTS first_name VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS instagram_handle VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS tiktok_handle VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS youtube_url TEXT,
+                ADD COLUMN IF NOT EXISTS phone VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS city_state VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS identity_type VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS goal TEXT,
+                ADD COLUMN IF NOT EXISTS documenting TEXT,
+                ADD COLUMN IF NOT EXISTS generated_identity_sentence TEXT,
+                ADD COLUMN IF NOT EXISTS challenge_30_day TEXT,
+                ADD COLUMN IF NOT EXISTS upside VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS downside VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS generated_stake_statement TEXT,
+                ADD COLUMN IF NOT EXISTS audience_size VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS primary_platform VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS monetization_route VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS biggest_obstacle VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS consent_opt_in BOOLEAN DEFAULT FALSE,
+                ADD COLUMN IF NOT EXISTS source_page VARCHAR(255) DEFAULT 'mirror5000',
+                ADD COLUMN IF NOT EXISTS email_sent_status VARCHAR(255) DEFAULT 'pending',
+                ADD COLUMN IF NOT EXISTS admin_notified_status VARCHAR(255) DEFAULT 'pending',
+                ADD COLUMN IF NOT EXISTS waitlist_kit BOOLEAN DEFAULT FALSE;
+        `);
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS email_outbox (
+                id VARCHAR(255) PRIMARY KEY,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                recipient_email VARCHAR(320) NOT NULL
+            );
+        `);
+        await pool.query(`
+            ALTER TABLE email_outbox
+                ADD COLUMN IF NOT EXISTS email_type VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS subject VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS body TEXT,
+                ADD COLUMN IF NOT EXISTS status VARCHAR(255) DEFAULT 'pending',
+                ADD COLUMN IF NOT EXISTS error_message TEXT,
+                ADD COLUMN IF NOT EXISTS retry_count INTEGER DEFAULT 0;
+        `);
+        console.log("PostgreSQL tables checked and ready.");
     } else {
+        if (isVercel && !allowEphemeralFallback) {
+            console.warn("DATABASE_URL/POSTGRES_URL is missing in Vercel. Write endpoints will reject submissions to prevent data loss.");
+            return;
+        }
         if (!fs.existsSync(DB_FILE)) {
             fs.writeFileSync(DB_FILE, JSON.stringify([], null, 2), 'utf8');
         }
@@ -127,14 +195,25 @@ async function dbInit() {
 }
 
 // Call init
-dbInit();
+let dbInitError = null;
+const dbReady = dbInit().catch((err) => {
+    dbInitError = err;
+    console.error("Database initialization failed:", err);
+});
+
+async function ensureDbReady() {
+    await dbReady;
+    if (dbInitError) throw dbInitError;
+}
 
 // Db Access functions
 async function getSubscribers() {
+    await ensureDbReady();
     if (usePostgres) {
         const res = await pool.query('SELECT * FROM subscribers ORDER BY created_at DESC');
         return res.rows;
     } else {
+        if (isVercel && !allowEphemeralFallback) return [];
         try {
             if (!fs.existsSync(DB_FILE)) return [];
             return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
@@ -146,6 +225,9 @@ async function getSubscribers() {
 }
 
 async function addSubscriber(sub) {
+    await ensureDbReady();
+    assertWritablePersistence();
+
     if (usePostgres) {
         const query = `
             INSERT INTO subscribers (
@@ -177,6 +259,7 @@ async function addSubscriber(sub) {
                 biggest_obstacle = COALESCE(EXCLUDED.biggest_obstacle, subscribers.biggest_obstacle),
                 consent_opt_in = EXCLUDED.consent_opt_in,
                 source_page = EXCLUDED.source_page
+            RETURNING *
         `;
         const values = [
             sub.id, sub.first_name, sub.email, sub.instagram_handle, sub.tiktok_handle, sub.youtube_url, sub.phone, sub.city_state,
@@ -184,27 +267,39 @@ async function addSubscriber(sub) {
             sub.generated_stake_statement, sub.audience_size, sub.primary_platform, sub.monetization_route, sub.biggest_obstacle,
             sub.consent_opt_in, sub.source_page || 'mirror5000', sub.email_sent_status || 'pending', sub.admin_notified_status || 'pending'
         ];
-        await pool.query(query, values);
+        const result = await pool.query(query, values);
+        return result.rows[0];
     } else {
         const subs = await getSubscribers();
         const existingIdx = subs.findIndex(s => s.email.toLowerCase() === sub.email.toLowerCase());
         if (existingIdx !== -1) {
-            // Update existing subscriber record with workbook fields
-            subs[existingIdx] = {
-                ...subs[existingIdx],
-                ...sub,
-                id: subs[existingIdx].id, // preserve original id
-                created_at: subs[existingIdx].created_at // preserve original timestamp
-            };
+            const existing = subs[existingIdx];
+            const merged = { ...existing };
+            Object.entries(sub).forEach(([key, value]) => {
+                if (value !== null && value !== undefined && value !== '') {
+                    merged[key] = value;
+                }
+            });
+            merged.id = existing.id;
+            merged.created_at = existing.created_at;
+            merged.email_sent_status = existing.email_sent_status || sub.email_sent_status || 'pending';
+            merged.admin_notified_status = existing.admin_notified_status || sub.admin_notified_status || 'pending';
+            subs[existingIdx] = merged;
+            fs.writeFileSync(DB_FILE, JSON.stringify(subs, null, 2), 'utf8');
+            return merged;
         } else {
             sub.created_at = new Date().toISOString();
             subs.push(sub);
+            fs.writeFileSync(DB_FILE, JSON.stringify(subs, null, 2), 'utf8');
+            return sub;
         }
-        fs.writeFileSync(DB_FILE, JSON.stringify(subs, null, 2), 'utf8');
     }
 }
 
 async function updateSubscriberStatus(id, email_sent_status, admin_notified_status) {
+    await ensureDbReady();
+    assertWritablePersistence();
+
     if (usePostgres) {
         await pool.query(
             'UPDATE subscribers SET email_sent_status = $1, admin_notified_status = $2 WHERE id = $3',
@@ -222,10 +317,12 @@ async function updateSubscriberStatus(id, email_sent_status, admin_notified_stat
 }
 
 async function getEmailOutbox() {
+    await ensureDbReady();
     if (usePostgres) {
         const res = await pool.query('SELECT * FROM email_outbox ORDER BY created_at DESC');
         return res.rows;
     } else {
+        if (isVercel && !allowEphemeralFallback) return [];
         try {
             if (!fs.existsSync(OUTBOX_DB_FILE)) return [];
             return JSON.parse(fs.readFileSync(OUTBOX_DB_FILE, 'utf8'));
@@ -237,6 +334,9 @@ async function getEmailOutbox() {
 }
 
 async function addEmailToOutbox(email) {
+    await ensureDbReady();
+    assertWritablePersistence();
+
     if (usePostgres) {
         const query = `
             INSERT INTO email_outbox (
@@ -258,6 +358,9 @@ async function addEmailToOutbox(email) {
 }
 
 async function updateEmailOutboxStatus(id, status, error_message, retry_count) {
+    await ensureDbReady();
+    assertWritablePersistence();
+
     if (usePostgres) {
         await pool.query(
             'UPDATE email_outbox SET status = $1, error_message = $2, retry_count = $3 WHERE id = $4',
@@ -276,7 +379,7 @@ async function updateEmailOutboxStatus(id, status, error_message, retry_count) {
 }
 
 // Custom Deterministic Admin Token
-const adminPassword = process.env.ADMIN_LEDGER_PASSWORD || 'admin123';
+const adminPassword = process.env.ADMIN_LEDGER_PASSWORD || '9938';
 const ADMIN_TOKEN = crypto.createHash('sha256').update(adminPassword).digest('hex');
 
 // In-Memory Rate Limiter Map
@@ -318,6 +421,25 @@ function requireAdmin(req, res, next) {
 // -------------------------------------------------------------
 // API Endpoints
 // -------------------------------------------------------------
+
+app.get('/api/health', async (req, res) => {
+    try {
+        await ensureDbReady();
+        res.json({
+            ok: !dbInitError,
+            persistence: getPersistenceStatus(),
+            smtpConfigured: Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS),
+            adminEmailConfigured: Boolean(process.env.ADMIN_EMAIL),
+            publicBaseUrl: getPublicBaseUrl()
+        });
+    } catch (err) {
+        res.status(500).json({
+            ok: false,
+            persistence: getPersistenceStatus(),
+            error: err.message
+        });
+    }
+});
 
 // -------------------------------------------------------------
 // API: Recent Subscribers Public Feed (Obfuscated for social proof ticker)
@@ -377,29 +499,28 @@ app.get('/api/subscribers/recent', async (req, res) => {
 // API: Subscribe Endpoint
 // -------------------------------------------------------------
 app.post('/api/subscribe', rateLimiter, async (req, res) => {
-    const {
-        first_name,
-        email,
-        instagram_handle,
-        tiktok_handle,
-        youtube_url,
-        phone,
-        city_state,
-        identity_type,
-        goal,
-        documenting,
-        challenge_30_day,
-        upside,
-        downside,
-        audience_size,
-        primary_platform,
-        monetization_route,
-        biggest_obstacle,
-        consent_opt_in,
-        // Honeypot fields
-        website,
-        nickname
-    } = req.body;
+    const body = req.body || {};
+    const first_name = cleanText(body.first_name || body.firstName || body.name);
+    const email = normalizeEmail(body.email);
+    const instagram_handle = cleanText(body.instagram_handle || body.instagram || body.instagramHandle);
+    const tiktok_handle = cleanText(body.tiktok_handle || body.tiktok || body.tiktokHandle);
+    const youtube_url = cleanText(body.youtube_url || body.youtube || body.youtubeUrl);
+    const phone = cleanText(body.phone || body.phone_number || body.phoneNumber);
+    const city_state = cleanText(body.city_state || body.cityState || body.location);
+    const identity_type = cleanText(body.identity_type || body.identityType);
+    const goal = cleanText(body.goal);
+    const documenting = cleanText(body.documenting);
+    const challenge_30_day = cleanText(body.challenge_30_day || body.challenge30Day || body.challenge);
+    const upside = cleanText(body.upside);
+    const downside = cleanText(body.downside);
+    const audience_size = cleanText(body.audience_size || body.audienceSize);
+    const primary_platform = cleanText(body.primary_platform || body.primaryPlatform);
+    const monetization_route = cleanText(body.monetization_route || body.monetizationRoute || body.monetization);
+    const biggest_obstacle = cleanText(body.biggest_obstacle || body.biggestObstacle || body.obstacle);
+    const source_page = cleanText(body.source_page || body.sourcePage) || 'mirror5000';
+    const consent_opt_in = asBoolean(body.consent_opt_in || body.consentOptIn);
+    const website = cleanText(body.website);
+    const nickname = cleanText(body.nickname);
 
     // 1. Honeypot check
     if (website || nickname) {
@@ -443,26 +564,30 @@ app.post('/api/subscribe', rateLimiter, async (req, res) => {
         primary_platform: primary_platform || null,
         monetization_route: monetization_route || null,
         biggest_obstacle: biggest_obstacle || null,
-        consent_opt_in: consent_opt_in === true || consent_opt_in === 'true',
-        source_page: 'mirror5000',
+        consent_opt_in,
+        source_page,
         email_sent_status: 'pending',
         admin_notified_status: 'pending'
     };
 
     // 4. Save subscriber to database
+    let savedSubscriber;
     try {
-        await addSubscriber(newSubscriber);
+        savedSubscriber = await addSubscriber(newSubscriber);
     } catch (err) {
         console.error("DB Error adding subscriber:", err);
-        return res.status(400).json({ error: err.message || 'Failed to save entry.' });
+        return res.status(err.statusCode || 500).json({ error: err.message || 'Failed to save entry.' });
     }
 
     // 5. Trigger email flow asynchronously
-    dispatchEmails(newSubscriber);
+    dispatchEmails(savedSubscriber).catch((err) => {
+        console.error("Async email dispatch failed:", err);
+    });
 
     return res.status(200).json({
         message: 'Successfully registered in the Mirror 5000 system.',
-        redirectUrl: '/mirror5000/confirmed'
+        redirectUrl: '/mirror5000/confirmed',
+        persistence: getPersistenceStatus()
     });
 });
 
@@ -470,10 +595,12 @@ app.post('/api/subscribe', rateLimiter, async (req, res) => {
 // API: Waitlist Opt-In Endpoint
 // -------------------------------------------------------------
 app.post('/api/waitlist', async (req, res) => {
-    const { email } = req.body;
+    const email = normalizeEmail(req.body && req.body.email);
     if (!email) return res.status(400).json({ error: 'Email is required.' });
 
     try {
+        await ensureDbReady();
+        assertWritablePersistence();
         if (usePostgres) {
             const result = await pool.query(
                 'UPDATE subscribers SET waitlist_kit = TRUE WHERE LOWER(email) = LOWER($1) RETURNING *',
@@ -506,7 +633,7 @@ app.post('/api/waitlist', async (req, res) => {
         res.json({ success: true, message: 'Successfully joined waitlist.' });
     } catch (err) {
         console.error("Waitlist DB update failed:", err);
-        res.status(500).json({ error: err.message || 'Failed to join waitlist.' });
+        res.status(err.statusCode || 500).json({ error: err.message || 'Failed to join waitlist.' });
     }
 });
 
@@ -576,7 +703,9 @@ app.get('/api/admin/stats', requireAdmin, async (req, res) => {
             mostCommonObstacle: topObstacle,
             audienceSizeBreakdown: audienceCounts,
             subscribers: subs,
-            outbox: outbox.filter(e => e.status !== 'sent') // pending or failed queue
+            outbox: outbox.filter(e => e.status !== 'sent'), // pending or failed queue
+            persistence: getPersistenceStatus(),
+            smtpConfigured: Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)
         });
     } catch (err) {
         console.error("Error generating admin statistics:", err);
@@ -652,7 +781,7 @@ app.post('/api/admin/retry-email', requireAdmin, async (req, res) => {
 // -------------------------------------------------------------
 async function dispatchEmails(subscriber) {
     const pdfPath = path.join(__dirname, 'public', 'assets', 'seen-until-believed-sacred-tech-edition.pdf');
-    const pdfUrl = process.env.PDF_DOWNLOAD_URL || `http://localhost:${PORT}/assets/seen-until-believed-sacred-tech-edition.pdf`;
+    const pdfUrl = process.env.PDF_DOWNLOAD_URL || `${getPublicBaseUrl()}/assets/seen-until-believed-sacred-tech-edition.pdf`;
 
     // 1. WELCOME EMAIL FOR SUBSCRIBER
     const welcomeSubject = 'Your Mirror 5000 Field Copy Is Inside';
@@ -723,7 +852,7 @@ async function dispatchEmails(subscriber) {
             <p>Your field copy of <strong>Seen Until Believed / The Gospel of Going Visible</strong> is ready:</p>
             
             <p style="text-align: center; margin: 30px 0;">
-                <a href="${pdfUrl}" class="btn" target="_blank">Download Field Manual</a>
+                <a href="${escapeHtml(pdfUrl)}" class="btn" target="_blank">Download Field Manual</a>
             </p>
 
             <p>Read it like a field manual, not a motivational quote book.</p>
@@ -733,10 +862,10 @@ async function dispatchEmails(subscriber) {
             <div class="accent-line"></div>
 
             <p><strong>Your story alignment:</strong></p>
-            <p class="highlight">"${subscriber.generated_identity_sentence}"</p>
+            <p class="highlight">"${escapeHtml(subscriber.generated_identity_sentence)}"</p>
 
             <p><strong>Your commitments:</strong></p>
-            <p class="highlight">"${subscriber.generated_stake_statement}"</p>
+            <p class="highlight">"${escapeHtml(subscriber.generated_stake_statement)}"</p>
 
             <div class="accent-line"></div>
 
@@ -772,19 +901,19 @@ async function dispatchEmails(subscriber) {
         <div class="card">
             <h3>New subscriber entered the field system.</h3>
             <table>
-                <tr><td class="label">Name:</td><td>${subscriber.first_name}</td></tr>
-                <tr><td class="label">Email:</td><td>${subscriber.email}</td></tr>
-                <tr><td class="label">Identity:</td><td>${subscriber.generated_identity_sentence}</td></tr>
-                <tr><td class="label">30-Day Stake:</td><td>${subscriber.generated_stake_statement}</td></tr>
-                <tr><td class="label">Audience Size:</td><td>${subscriber.audience_size}</td></tr>
-                <tr><td class="label">Primary Platform:</td><td>${subscriber.primary_platform}</td></tr>
-                <tr><td class="label">Monetization Route:</td><td>${subscriber.monetization_route}</td></tr>
-                <tr><td class="label">Biggest Obstacle:</td><td>${subscriber.biggest_obstacle}</td></tr>
-                <tr><td class="label">Instagram:</td><td>${subscriber.instagram_handle || 'N/A'}</td></tr>
-                <tr><td class="label">TikTok:</td><td>${subscriber.tiktok_handle || 'N/A'}</td></tr>
-                <tr><td class="label">YouTube:</td><td>${subscriber.youtube_url || 'N/A'}</td></tr>
-                <tr><td class="label">Phone:</td><td>${subscriber.phone || 'N/A'}</td></tr>
-                <tr><td class="label">City/State:</td><td>${subscriber.city_state || 'N/A'}</td></tr>
+                <tr><td class="label">Name:</td><td>${escapeHtml(subscriber.first_name || 'N/A')}</td></tr>
+                <tr><td class="label">Email:</td><td>${escapeHtml(subscriber.email || 'N/A')}</td></tr>
+                <tr><td class="label">Identity:</td><td>${escapeHtml(subscriber.generated_identity_sentence || 'N/A')}</td></tr>
+                <tr><td class="label">30-Day Stake:</td><td>${escapeHtml(subscriber.generated_stake_statement || 'N/A')}</td></tr>
+                <tr><td class="label">Audience Size:</td><td>${escapeHtml(subscriber.audience_size || 'N/A')}</td></tr>
+                <tr><td class="label">Primary Platform:</td><td>${escapeHtml(subscriber.primary_platform || 'N/A')}</td></tr>
+                <tr><td class="label">Monetization Route:</td><td>${escapeHtml(subscriber.monetization_route || 'N/A')}</td></tr>
+                <tr><td class="label">Biggest Obstacle:</td><td>${escapeHtml(subscriber.biggest_obstacle || 'N/A')}</td></tr>
+                <tr><td class="label">Instagram:</td><td>${escapeHtml(subscriber.instagram_handle || 'N/A')}</td></tr>
+                <tr><td class="label">TikTok:</td><td>${escapeHtml(subscriber.tiktok_handle || 'N/A')}</td></tr>
+                <tr><td class="label">YouTube:</td><td>${escapeHtml(subscriber.youtube_url || 'N/A')}</td></tr>
+                <tr><td class="label">Phone:</td><td>${escapeHtml(subscriber.phone || 'N/A')}</td></tr>
+                <tr><td class="label">City/State:</td><td>${escapeHtml(subscriber.city_state || 'N/A')}</td></tr>
                 <tr><td class="label">Timestamp:</td><td>${new Date().toISOString()}</td></tr>
             </table>
         </div>
@@ -910,8 +1039,12 @@ async function dispatchEmails(subscriber) {
 // -------------------------------------------------------------
 // Start Server Daemon
 // -------------------------------------------------------------
-app.listen(PORT, () => {
-    console.log(`\n🚀 Seen Until Believed Mirror 5000 running at http://localhost:${PORT}`);
-    console.log(`📂 Subscribers DB File: ${DB_FILE}`);
-    console.log(`📬 Outbox File: ${OUTBOX_DB_FILE}`);
-});
+if (!isVercel) {
+    app.listen(PORT, () => {
+        console.log(`\nSeen Until Believed Mirror 5000 running at http://localhost:${PORT}`);
+        console.log(`Subscribers DB File: ${DB_FILE}`);
+        console.log(`Outbox File: ${OUTBOX_DB_FILE}`);
+    });
+}
+
+module.exports = app;

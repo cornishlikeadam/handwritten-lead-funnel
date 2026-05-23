@@ -1,0 +1,908 @@
+/* Import handwritten Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400;700&family=Permanent+Marker&family=Reenie+Beanie&display=swap');
+
+:root {
+    /* Classic Notebook Theme Colors (Cream paper + Purple ink + Red accent + Yellow highlights + Green success) */
+    --classic-bg: #fffdf9;
+    --classic-paper-line: rgba(109, 89, 122, 0.12);
+    --classic-margin-line: #ff7675; /* Red margin */
+    --classic-ink: #2d1a3c; /* Deep Purple ink */
+    --classic-ink-secondary: #6d597a; /* Muted Purple */
+    --classic-highlight: #fff200; /* Yellow highlighter */
+    --classic-highlight-marker: rgba(255, 242, 0, 0.35);
+    --classic-accent: #d63031; /* Crimson Red */
+    --classic-accent-hover: #b2bec3;
+    --classic-success: #2ecc71; /* Forest Green */
+    --classic-grid-color: rgba(45, 26, 60, 0.05);
+
+    /* Dark Chalkboard Theme Colors (Deep purple chalkboard + Chalk white + Chalk red + Yellow stickies + Green progress) */
+    --dark-bg: #1c122c; /* Deep Purple Chalkboard */
+    --dark-paper-line: #2b1d3d;
+    --dark-grid-color: rgba(165, 94, 234, 0.15); /* Purple Grid Lines */
+    --dark-ink: #f5f6fa; /* Chalk White */
+    --dark-ink-secondary: #9b8ea9; /* Muted Purple-Gray */
+    --dark-highlight: #fed330; /* Chalkboard Yellow */
+    --dark-highlight-marker: rgba(254, 211, 48, 0.25);
+    --dark-accent: #ff4757; /* Chalk Coral Red */
+    --dark-accent-hover: #ff6b81;
+    --dark-success: #2ecc71; /* Bright Green */
+    --dark-margin-line: rgba(255, 71, 87, 0.25); /* Chalk Red Line */
+
+    /* Active Theme Variables (default to Dark Purple Chalkboard for premium feel) */
+    --bg: var(--dark-bg);
+    --paper-line: var(--dark-paper-line);
+    --grid-color: var(--dark-grid-color);
+    --ink: var(--dark-ink);
+    --ink-secondary: var(--dark-ink-secondary);
+    --highlight: var(--dark-highlight);
+    --highlight-marker: var(--dark-highlight-marker);
+    --accent: var(--dark-accent);
+    --accent-hover: var(--dark-accent-hover);
+    --success: var(--dark-success);
+    --margin-line: var(--dark-margin-line);
+    
+    --font-heading: 'Permanent Marker', cursive;
+    --font-handwritten: 'Caveat', cursive;
+    --font-body: 'Architects Daughter', cursive;
+    --font-doodle: 'Reenie Beanie', cursive;
+    
+    --shadow-sketchy: 4px 4px 0px var(--ink);
+    --shadow-sketchy-hover: 7px 7px 0px var(--ink);
+    --border-sketchy: 3px solid var(--ink);
+}
+
+.theme-classic {
+    --bg: var(--classic-bg);
+    --paper-line: var(--classic-paper-line);
+    --grid-color: var(--classic-grid-color);
+    --ink: var(--classic-ink);
+    --ink-secondary: var(--classic-ink-secondary);
+    --highlight: var(--classic-highlight);
+    --highlight-marker: var(--classic-highlight-marker);
+    --accent: var(--classic-accent);
+    --accent-hover: var(--classic-accent-hover);
+    --success: var(--classic-success);
+    --margin-line: var(--classic-margin-line);
+    --shadow-sketchy: 4px 4px 0px var(--ink);
+    --shadow-sketchy-hover: 6px 6px 0px var(--ink);
+    --border-sketchy: 3px solid var(--ink);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.4s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    padding: 2rem 1rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Background patterns */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Classic lined/grid notebook paper */
+body.theme-classic::before {
+    background-image: 
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* Dark blueprint/grid paper */
+body:not(.theme-classic)::before {
+    background-image: 
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+/* Margin line for notebook feel */
+.margin-red-line {
+    position: absolute;
+    left: 40px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--margin-line);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* Header & Navigation */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px dashed var(--ink);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-doodle {
+    font-family: var(--font-doodle);
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--accent);
+    transform: rotate(-10deg);
+    display: inline-block;
+}
+
+.logo-text {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+}
+
+/* Toggle Switch Styled like a Hand-Drawn Checkbox */
+.theme-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-handwritten);
+    font-size: 1.5rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.hand-drawn-checkbox {
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--ink);
+    border-radius: 6px 12px 8px 10px/10px 8px 12px 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.4rem;
+    position: relative;
+}
+
+.hand-drawn-checkbox::after {
+    content: 'X';
+    color: var(--accent);
+    font-family: var(--font-heading);
+    opacity: 0;
+    transform: scale(0.5) rotate(-15deg);
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+body:not(.theme-classic) .hand-drawn-checkbox::after {
+    opacity: 1;
+    transform: scale(1.1) rotate(-10deg);
+}
+
+/* Main Grid Layout */
+.main-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 3.5rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+}
+
+/* Left Side: Editorial Presentation */
+.presentation-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.hero-title-container {
+    position: relative;
+}
+
+.hero-title {
+    font-family: var(--font-heading);
+    font-size: 3.8rem;
+    line-height: 1.1;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    letter-spacing: -2px;
+}
+
+.hero-title span.accent-text {
+    color: var(--accent);
+    position: relative;
+    display: inline-block;
+}
+
+/* Handwritten Underline SVG positioning */
+.sketchy-underline {
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 15px;
+    pointer-events: none;
+}
+
+.sketchy-underline path {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawLine 2s forwards ease-in-out;
+}
+
+.hero-subtitle {
+    font-family: var(--font-handwritten);
+    font-size: 2.2rem;
+    font-weight: bold;
+    line-height: 1.2;
+    color: var(--ink-secondary);
+    margin-top: 1rem;
+    transform: rotate(-1deg);
+}
+
+/* Mockup Display Box */
+.mockup-card {
+    border: var(--border-sketchy);
+    border-radius: 12px 25px 15px 30px/20px 15px 30px 12px;
+    padding: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.02);
+    box-shadow: var(--shadow-sketchy);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    transform: rotate(1deg);
+}
+
+.theme-classic .mockup-card {
+    background-color: rgba(0, 0, 0, 0.01);
+}
+
+.book-image-container {
+    max-width: 280px;
+    width: 100%;
+    position: relative;
+    border-radius: 8px 12px 10px 8px;
+    overflow: hidden;
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    transform: rotate(-2deg);
+    transition: transform 0.3s ease;
+}
+
+.book-image-container:hover {
+    transform: rotate(0deg) scale(1.03);
+}
+
+.book-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.badge-doodle {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    background-color: var(--highlight);
+    color: var(--classic-ink); /* black text is more visible on highlighter */
+    border: 2px solid #000;
+    font-family: var(--font-handwritten);
+    font-size: 1.6rem;
+    font-weight: bold;
+    padding: 6px 15px;
+    border-radius: 50% 20% 40% 10%/20% 40% 10% 50%;
+    transform: rotate(15deg);
+    box-shadow: 3px 3px 0 #000;
+    z-index: 10;
+}
+
+/* Arrow doodle pointing to form */
+.arrow-doodle {
+    position: absolute;
+    bottom: -60px;
+    right: 40px;
+    width: 120px;
+    height: 80px;
+    transform: rotate(10deg);
+    z-index: 5;
+    pointer-events: none;
+}
+
+@media (max-width: 900px) {
+    .arrow-doodle {
+        display: none;
+    }
+}
+
+.arrow-doodle path {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+    animation: drawLine 1.5s 1s forwards ease-in-out;
+}
+
+.manifesto-box {
+    font-family: var(--font-handwritten);
+    font-size: 1.8rem;
+    line-height: 1.4;
+    padding: 1.5rem;
+    position: relative;
+    border-left: 4px double var(--ink);
+    margin-left: 0.5rem;
+}
+
+.manifesto-box p {
+    margin-bottom: 1rem;
+}
+
+.highlight-yellow {
+    background-color: var(--highlight-marker);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Right Side: The Interactive Workbook Form */
+.workbook-card {
+    border: var(--border-sketchy);
+    border-radius: 20px 12px 25px 15px/15px 25px 12px 20px;
+    padding: 2.5rem;
+    background-color: rgba(255, 255, 255, 0.01);
+    box-shadow: var(--shadow-sketchy);
+    position: relative;
+    transform: rotate(-0.5deg);
+}
+
+.theme-classic .workbook-card {
+    background-color: #fffdf9;
+}
+
+.workbook-header {
+    margin-bottom: 2rem;
+    border-bottom: 2px dashed var(--ink);
+    padding-bottom: 1rem;
+    text-align: center;
+}
+
+.workbook-title {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+}
+
+.workbook-subtitle {
+    font-family: var(--font-handwritten);
+    font-size: 1.5rem;
+    color: var(--ink-secondary);
+}
+
+/* Multi-step progress tracker */
+.step-tracker {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+
+.step-tracker::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    border-top: 2px dashed var(--ink);
+    z-index: 1;
+}
+
+.step-node {
+    width: 45px;
+    height: 45px;
+    border: 2px solid var(--ink);
+    border-radius: 50% 45% 52% 48%/48% 52% 45% 50%;
+    background-color: var(--bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    z-index: 2;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--ink);
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+.step-node.active {
+    background-color: var(--accent);
+    color: var(--bg);
+    transform: scale(1.1) rotate(5deg);
+}
+
+.step-node.completed {
+    background-color: var(--success);
+    color: var(--bg);
+}
+
+/* Form Steps */
+.form-step {
+    display: none;
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.form-step.active {
+    display: block;
+}
+
+/* Fill-in-the-blank text line formatting */
+.workbook-sentence {
+    font-family: var(--font-handwritten);
+    font-size: 1.8rem;
+    line-height: 2.2;
+    margin-bottom: 2rem;
+}
+
+.input-blank {
+    background: transparent;
+    border: none;
+    border-bottom: 2.5px solid var(--ink);
+    font-family: var(--font-handwritten);
+    font-size: 1.8rem;
+    color: var(--accent);
+    padding: 0 8px;
+    outline: none;
+    width: auto;
+    min-width: 150px;
+    max-width: 100%;
+    font-weight: bold;
+}
+
+.input-blank:focus {
+    border-bottom-color: var(--accent);
+    border-bottom-style: dashed;
+}
+
+.input-blank::placeholder {
+    color: var(--ink-secondary);
+    opacity: 0.6;
+    font-style: italic;
+}
+
+/* Styled Select lists to fit handwritten look */
+.select-blank {
+    background: transparent;
+    border: none;
+    border-bottom: 2.5px dashed var(--ink);
+    font-family: var(--font-handwritten);
+    font-size: 1.8rem;
+    color: var(--accent);
+    padding: 0 8px;
+    outline: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.select-blank option {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+}
+
+/* Standard group input spacing */
+.form-group {
+    margin-bottom: 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-input-text {
+    width: 100%;
+    padding: 12px;
+    border: 3px solid var(--ink);
+    border-radius: 8px 12px 10px 8px/10px 8px 12px 8px;
+    background: transparent;
+    font-family: var(--font-handwritten);
+    font-size: 1.6rem;
+    color: var(--ink);
+    outline: none;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05);
+}
+
+.form-input-text:focus {
+    border-color: var(--accent);
+}
+
+/* Custom Grid Select Options (Visual Choices) */
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+}
+
+@media (max-width: 500px) {
+    .checkbox-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.choice-box {
+    border: 2px solid var(--ink);
+    border-radius: 8px 12px 9px 11px/11px 9px 12px 8px;
+    padding: 12px;
+    font-family: var(--font-handwritten);
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.01);
+    box-shadow: 2px 2px 0 var(--ink);
+    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.choice-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 0 var(--ink);
+}
+
+.choice-box input[type="checkbox"],
+.choice-box input[type="radio"] {
+    display: none;
+}
+
+.choice-box .box-check {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: bold;
+}
+
+.choice-box .box-check::after {
+    content: 'X';
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.choice-box input:checked + .box-check::after {
+    opacity: 1;
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.choice-box.selected {
+    border-color: var(--accent);
+    background-color: rgba(255, 71, 87, 0.08); /* Coral Red Alpha */
+}
+
+.theme-classic .choice-box.selected {
+    background-color: rgba(214, 48, 49, 0.08); /* Crimson Red Alpha */
+    border-color: var(--accent);
+}
+
+/* Button Group Nav */
+.button-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2.5rem;
+    gap: 15px;
+}
+
+.btn-sketch {
+    padding: 12px 24px;
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    background-color: transparent;
+    color: var(--ink);
+    border: var(--border-sketchy);
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sketchy);
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    outline: none;
+}
+
+.btn-sketch:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-sketchy-hover);
+}
+
+.btn-sketch:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+.btn-sketch.primary {
+    background-color: var(--accent);
+    color: var(--bg);
+}
+
+.btn-sketch.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Special Stamp Submit Button */
+.btn-stamp {
+    background-color: var(--accent);
+    color: var(--bg);
+    border: 4px solid var(--ink);
+    padding: 16px 32px;
+    font-size: 1.6rem;
+    border-radius: 12px 12px 12px 12px;
+    box-shadow: var(--shadow-sketchy);
+    transform: rotate(-1.5deg);
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-weight: bold;
+}
+
+.btn-stamp:hover {
+    transform: rotate(0deg) scale(1.02);
+    box-shadow: var(--shadow-sketchy-hover);
+}
+
+/* Footer / Credentials */
+footer {
+    margin-top: 6rem;
+    border-top: 2px dashed var(--ink);
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
+}
+
+.footer-doodles {
+    font-family: var(--font-doodle);
+    font-size: 2.2rem;
+    color: var(--ink-secondary);
+}
+
+.footer-socials {
+    display: flex;
+    gap: 20px;
+    font-family: var(--font-handwritten);
+    font-size: 1.4rem;
+}
+
+.footer-socials a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--accent);
+}
+
+.footer-socials a:hover {
+    border-bottom-style: solid;
+}
+
+/* Success Screen Doodles */
+.success-screen {
+    text-align: center;
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.checkmark-svg {
+    width: 100px;
+    height: 100px;
+}
+
+.checkmark-circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 4;
+    stroke-miterlimit: 10;
+    stroke: var(--success);
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    stroke-width: 5;
+    stroke: var(--success);
+    fill: none;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+}
+
+.success-email-notice {
+    font-family: var(--font-handwritten);
+    font-size: 1.7rem;
+    color: var(--ink-secondary);
+    margin-top: 1rem;
+}
+
+.success-download-box {
+    margin-top: 1.5rem;
+    border: 3px dashed var(--success);
+    border-radius: 8px;
+    padding: 1.5rem;
+    background-color: rgba(46, 204, 113, 0.08); /* Green Alpha */
+    max-width: 400px;
+    transform: rotate(1deg);
+}
+
+/* Animations */
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes drawLine {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Sidebar Info Cards */
+.sticky-note {
+    background-color: var(--highlight);
+    color: var(--classic-ink);
+    border: 2px solid var(--classic-ink);
+    padding: 1.5rem;
+    font-family: var(--font-handwritten);
+    font-size: 1.6rem;
+    line-height: 1.3;
+    border-radius: 4px 15px 4px 10px/10px 4px 15px 4px;
+    box-shadow: 5px 5px 0 var(--classic-ink);
+    transform: rotate(-2deg);
+    margin-top: 2rem;
+    position: relative;
+}
+
+.sticky-note::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 45%;
+    width: 40px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transform: rotate(-5deg);
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
+}
+
+.quote-highlight {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    color: var(--classic-accent);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+/* Admin Portal styles */
+.admin-card {
+    border: var(--border-sketchy);
+    border-radius: 12px;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.01);
+    box-shadow: var(--shadow-sketchy);
+    margin-top: 3rem;
+}
+
+.theme-classic .admin-card {
+    background-color: #ffffff;
+}
+
+.admin-table-container {
+    overflow-x: auto;
+    margin-top: 1.5rem;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-handwritten);
+    font-size: 1.4rem;
+}
+
+.admin-table th, .admin-table td {
+    border-bottom: 2.5px solid var(--paper-line);
+    padding: 10px;
+    text-align: left;
+}
+
+.admin-table th {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+/* Custom error message */
+.error-bubble {
+    border: 2px solid var(--accent);
+    background-color: rgba(255, 87, 87, 0.05);
+    color: var(--accent);
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-family: var(--font-handwritten);
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    display: none;
+    animation: fadeIn 0.3s ease-out;
+}

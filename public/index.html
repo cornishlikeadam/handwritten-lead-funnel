@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seen Until Believed | The 5K Mirror Method</title>
+    <meta name="description" content="Unlock the 5K Mirror Method for turning an ordinary life into visibility, trust, and income. Get Kendren Cornish's Sacred-Tech Edition manual free.">
+    <!-- Main stylesheet with cache busting -->
+    <link rel="stylesheet" href="style.css?v=1.0.2">
+</head>
+<body class="theme-dark">
+    <div class="margin-red-line"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo-container">
+                <div class="logo-doodle">S</div>
+                <div class="logo-text">Seen Until Believed</div>
+            </div>
+            
+            <div class="theme-switch-container" id="theme-toggle" role="button" aria-label="Toggle Theme">
+                <div class="hand-drawn-checkbox" id="theme-checkbox"></div>
+                <span>Classic Notebook Theme</span>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="main-grid">
+            
+            <!-- Left Side: presentation of the book & concepts -->
+            <div class="presentation-col">
+                <div class="hero-title-container">
+                    <h1 class="hero-title">
+                        GOING <span class="accent-text">VISIBLE
+                            <svg class="sketchy-underline" viewBox="0 0 300 20" preserveAspectRatio="none">
+                                <path d="M5,12 C100,5 200,8 295,14" />
+                            </svg>
+                        </span>
+                    </h1>
+                    <div class="hero-subtitle">
+                        The 5K Mirror Method for Turning an Ordinary Life into Trust & Cash Flow.
+                    </div>
+                </div>
+
+                <!-- Book Mockup Card -->
+                <div class="mockup-card">
+                    <div class="badge-doodle">FREE MANUAL!</div>
+                    <div class="book-image-container">
+                        <img src="assets/seen_until_believed_cover.png" alt="Seen Until Believed - Sacred Tech Edition" class="book-image">
+                    </div>
+                    
+                    <div class="manifesto-box">
+                        <p class="highlight-yellow">"the mirror is not vanity. it is evidence."</p>
+                        <p>A creator-economy field manual for ordinary people building public trust and distribution channels.</p>
+                    </div>
+
+                    <!-- Arrow pointing to the form -->
+                    <svg class="arrow-doodle" viewBox="0 0 120 80">
+                        <!-- Curved arrow pointing down-right -->
+                        <path d="M10,15 C45,10 80,25 105,55 M105,55 L85,52 M105,55 L98,35" />
+                    </svg>
+                </div>
+
+                <!-- Sticky Note quote -->
+                <div class="sticky-note">
+                    <div class="quote-highlight">Oracle Law 01</div>
+                    "Your regular life can become a story. Your story can become content. Your content can become opportunity. The mirror opens when you move."
+                </div>
+            </div>
+
+            <!-- Right Side: The Interactive Workbook Form -->
+            <div class="workbook-card" id="form-container">
+                <div class="workbook-header">
+                    <h2 class="workbook-title">Setup Your Mirror</h2>
+                    <p class="workbook-subtitle">Complete this worksheet to unlock the e-book</p>
+                </div>
+
+                <!-- Step progress nodes -->
+                <div class="step-tracker">
+                    <div class="step-node active" data-step="1" id="step-node-1">1</div>
+                    <div class="step-node" data-step="2" id="step-node-2">2</div>
+                    <div class="step-node" data-step="3" id="step-node-3">3</div>
+                </div>
+
+                <!-- Error message box -->
+                <div class="error-bubble" id="error-message"></div>
+
+                <form id="signup-form" novalidate>
+                    <!-- STEP 1: One-sentence Identity -->
+                    <div class="form-step active" id="step-1">
+                        <div class="workbook-sentence">
+                            I am a 
+                            <select name="niche" id="input-niche" class="select-blank">
+                                <option value="" disabled selected>select your role...</option>
+                                <option value="9-to-5 worker">9-to-5 worker</option>
+                                <option value="freelance developer">freelance developer</option>
+                                <option value="student builder">student builder</option>
+                                <option value="creative designer">creative designer</option>
+                                <option value="marketing specialist">marketing specialist</option>
+                                <option value="side-hustler">side-hustler</option>
+                                <option value="aspiring content creator">aspiring creator</option>
+                            </select>
+                            documenting the process of 
+                            <input type="text" name="documenting" id="input-documenting" class="input-blank" placeholder="e.g. escaping the corporate rut" required>
+                            so I can 
+                            <input type="text" name="goal" id="input-goal" class="input-blank" placeholder="e.g. build trust and a side business" required>.
+                        </div>
+
+                        <div class="workbook-sentence">
+                            For the next 30 days, I will show 
+                            <input type="text" name="sprintShow" id="input-sprint-show" class="input-blank" placeholder="e.g. my daily build sessions" required>
+                            every day and prove 
+                            <input type="text" name="sprintProve" id="input-sprint-prove" class="input-blank" placeholder="e.g. my product is growing" required>
+                            by 
+                            <input type="text" name="sprintAction" id="input-sprint-action" class="input-blank" placeholder="e.g. sharing daily short videos" required>.
+                        </div>
+
+                        <div class="button-nav">
+                            <div></div> <!-- spacer -->
+                            <button type="button" class="btn-sketch primary" id="next-btn-1">
+                                Step 2: Strategy →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Marketing & Audience Details -->
+                    <div class="form-step" id="step-2">
+                        <!-- Preferred Platform -->
+                        <div class="form-group">
+                            <label class="form-label">Which platform will host your newsletter / writing?</label>
+                            <select name="emailPlatform" id="input-platform" class="form-input-text select-blank" style="border: 3px solid var(--ink); border-radius: 8px;">
+                                <option value="" disabled selected>Select newsletter tool...</option>
+                                <option value="beehiiv">Beehiiv (Recommended for growth)</option>
+                                <option value="substack">Substack (Minimalist and clean)</option>
+                                <option value="convertkit">ConvertKit / Kit (Advanced automations)</option>
+                                <option value="mailchimp">Mailchimp (Standard marketing)</option>
+                                <option value="none-yet">I haven't picked one yet (Need recommendation)</option>
+                            </select>
+                        </div>
+
+                        <!-- Current Audience Size -->
+                        <div class="form-group">
+                            <label class="form-label">What's your current aggregate audience size?</label>
+                            <div class="checkbox-grid">
+                                <label class="choice-box">
+                                    <input type="radio" name="audienceSize" value="0-500" checked>
+                                    <span class="box-check"></span>
+                                    <span>0 to 500 subscribers</span>
+                                </label>
+                                <label class="choice-box">
+                                    <input type="radio" name="audienceSize" value="500-2000">
+                                    <span class="box-check"></span>
+                                    <span>500 to 2,000</span>
+                                </label>
+                                <label class="choice-box">
+                                    <input type="radio" name="audienceSize" value="2000-10000">
+                                    <span class="box-check"></span>
+                                    <span>2,000 to 10,000</span>
+                                </label>
+                                <label class="choice-box">
+                                    <input type="radio" name="audienceSize" value="10000+">
+                                    <span class="box-check"></span>
+                                    <span>10,000+ (Scaling phase)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Monetization path -->
+                        <div class="form-group">
+                            <label class="form-label">What is your primary monetization path?</label>
+                            <select name="monetization" id="input-monetization" class="form-input-text select-blank" style="border: 3px solid var(--ink); border-radius: 8px;">
+                                <option value="" disabled selected>Select monetization goal...</option>
+                                <option value="digital-products">Digital Products (Ebooks, templates, SaaS)</option>
+                                <option value="services">Coaching, Consulting, or Agency Services</option>
+                                <option value="sponsorships">Brand Sponsorships & Newsletter ads</option>
+                                <option value="paid-subscriptions">Premium Paid Newsletter subscription</option>
+                                <option value="affiliate">Affiliate Marketing</option>
+                            </select>
+                        </div>
+
+                        <div class="button-nav">
+                            <button type="button" class="btn-sketch" id="prev-btn-2">← Back</button>
+                            <button type="button" class="btn-sketch primary" id="next-btn-2">Step 3: Deliver →</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Contact details & Sign up -->
+                    <div class="form-step" id="step-3">
+                        <div class="form-group">
+                            <label class="form-label" for="input-name">Your First Name</label>
+                            <input type="text" name="firstName" id="input-name" class="form-input-text" placeholder="e.g. Kendren" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="input-email">Your Email Address</label>
+                            <input type="email" name="email" id="input-email" class="form-input-text" placeholder="e.g. you@example.com" required>
+                        </div>
+
+                        <!-- Option to join mailing list -->
+                        <label class="choice-box" style="margin-top: 1rem; border: none; box-shadow: none; background: transparent; padding: 0;">
+                            <input type="checkbox" name="joinMailingList" id="input-mailing" value="yes" checked>
+                            <span class="box-check"></span>
+                            <span>Join Kendren's Sacred-Tech digest (highly recommended)</span>
+                        </label>
+
+                        <div class="button-nav" style="margin-top: 2rem;">
+                            <button type="button" class="btn-sketch" id="prev-btn-3">← Back</button>
+                            <button type="submit" class="btn-sketch primary btn-stamp" id="submit-btn">
+                                STAMP & SUBMIT
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- SUCCESS STATE SCREEN (Hidden by default) -->
+                <div class="success-screen" id="success-screen" style="display: none;">
+                    <svg class="checkmark-svg" viewBox="0 0 52 52">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                    </svg>
+                    
+                    <h3 class="workbook-title" style="color: var(--success)">STAMPED SUCCESSFULLY!</h3>
+                    
+                    <div class="workbook-sentence">
+                        Congratulations, <span id="success-name" class="highlight-yellow">Creator</span>! Your mirror profile is locked. 
+                    </div>
+                    
+                    <p class="success-email-notice">
+                        We've sent a download link for <strong>Seen Until Believed</strong> to <span id="success-email" style="text-decoration: underline; color: var(--accent);">email@example.com</span>.
+                    </p>
+
+                    <div class="success-download-box">
+                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem; font-family: var(--font-body)">
+                            <strong>Instant Access:</strong>
+                        </p>
+                        <a href="assets/seen-until-believed-sacred-tech-edition.pdf" download class="btn-sketch primary" style="text-decoration: none; width: 100%;">
+                            Download PDF Directly
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Ledger (Admin Panel) -->
+        <section class="admin-card" id="admin-ledger-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed var(--ink); padding-bottom: 0.8rem; margin-bottom: 1rem;">
+                <h2 class="workbook-title" style="font-size: 1.8rem;">The Sacred Ledger</h2>
+                <button type="button" class="btn-sketch" id="export-csv-btn" style="padding: 6px 14px; font-size: 1rem;">
+                    Export to CSV
+                </button>
+            </div>
+            <p class="workbook-subtitle" style="margin-bottom: 1.5rem;">A handwritten ledger of every creator who submitted their workbook.</p>
+            
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Niche</th>
+                            <th>Documenting</th>
+                            <th>Monetization</th>
+                            <th>Platform</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledger-tbody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: var(--ink-secondary);">No ledger records yet. Submissions will appear here.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-doodles">~ open the mirror ~</div>
+            <div class="footer-socials">
+                <span>By Kendren Cornish</span>
+                <a href="https://kendren.us" target="_blank">kendren.us</a>
+                <a href="https://instagram.com/THXKENDREN" target="_blank">@THXKENDREN</a>
+                <a href="https://instagram.com/FRU1T4U" target="_blank">@FRU1T4U</a>
+                <a href="mailto:TACYHON@proton.me">TACYHON@proton.me</a>
+            </div>
+            
+            <!-- Button to open Admin Ledger (simulates notebook drawer) -->
+            <button type="button" class="btn-sketch" id="toggle-ledger-btn" style="margin-top: 1rem; border-color: var(--ink-secondary); color: var(--ink-secondary); font-size: 0.95rem; padding: 6px 14px;">
+                Show Subscriber Ledger
+            </button>
+        </footer>
+    </div>
+
+    <!-- Frontend logic -->
+    <script src="app.js"></script>
+</body>
+</html>

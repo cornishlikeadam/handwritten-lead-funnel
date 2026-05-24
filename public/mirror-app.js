@@ -1,6 +1,6 @@
 const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:3005'
-    : '';
+    : 'https://handwritten-lead-funnel.vercel.app';
 
 const isTest = window.location.pathname.includes('-test');
 const apiSuffix = isTest ? '-test' : '';

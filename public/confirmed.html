@@ -3,32 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stamps Locked | Mirror 5000 Confirmation</title>
-    <link rel="stylesheet" href="mirror-style.css?v=1.0.6">
+    <title>Passport Verified | Mirror 5000 Sandbox</title>
+    <link rel="stylesheet" href="../mirror-style.css?v=1.0.6">
+    <style>
+        .ebook-offer-card {
+            border: 3px solid var(--ink);
+            border-radius: 8px;
+            padding: 2.5rem;
+            background-color: var(--paper-card);
+            margin: 2.5rem 0;
+            box-shadow: var(--shadow-flat);
+            text-align: left;
+        }
+        .ebook-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 25px;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 600px) {
+            .ebook-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .book-mockup {
+                max-width: 200px;
+                margin: 0 auto 1.5rem auto;
+            }
+        }
+        .book-mockup {
+            border: 3px solid var(--ink);
+            box-shadow: 5px 5px 0 var(--shadow-charcoal);
+            border-radius: 4px;
+            overflow: hidden;
+            background: var(--paper-bg);
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--stamp-red);
+            text-transform: uppercase;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+        }
+        .book-mockup::before {
+            content: 'FIELD MANUAL';
+            position: absolute;
+            bottom: 15px;
+            font-size: 0.75rem;
+            font-family: var(--font-body);
+            color: var(--ink);
+            letter-spacing: 2px;
+        }
+        .book-mockup.with-image::before {
+            content: none;
+        }
+        .price-tag-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 1.5rem 0;
+        }
+        .original-price {
+            text-decoration: line-through;
+            color: var(--ink);
+            opacity: 0.6;
+            font-size: 1.5rem;
+            font-family: var(--font-heading);
+        }
+        .active-price {
+            color: var(--stamp-red);
+            font-size: 2.5rem;
+            font-family: var(--font-heading);
+            transform: rotate(-2deg);
+        }
+        .save-badge {
+            background-color: rgba(108, 148, 130, 0.15);
+            color: var(--success-green);
+            border: 2px dashed var(--success-green);
+            padding: 2px 10px;
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            border-radius: 4px;
+            transform: rotate(2deg);
+        }
+        .scarcity-box {
+            background-color: rgba(209, 161, 78, 0.08);
+            border-left: 4px solid var(--gold);
+            padding: 0.8rem 1.2rem;
+            margin: 1.2rem 0;
+            font-family: var(--font-accents);
+            font-size: 1.2rem;
+            color: var(--ink);
+        }
+        .video-briefing-box {
+            border: 3px dashed var(--accent-purple);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 2rem 0;
+            background-color: rgba(124, 77, 255, 0.03);
+            text-align: center;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            border: 2px solid var(--ink);
+            box-shadow: 4px 4px 0 var(--ink);
+            background: #000;
+            margin-top: 15px;
+        }
+        .video-container iframe, .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .video-placeholder-text {
+            padding: 40px 20px;
+            font-family: var(--font-handwritten);
+            font-size: 1.8rem;
+            color: var(--accent-purple);
+        }
+    </style>
 </head>
 <body>
 
     <div class="notebook-container" style="text-align: center;">
-
+        
         <header>
             <div class="stamp-badge" style="border-color: var(--success-green); color: var(--success-green); transform: rotate(2deg);">Locked In</div>
             <div class="mirror-tag">Mirror 5000</div>
         </header>
 
         <section class="success-layout">
-
+            
             <div class="stamp-effect">VISIBLE</div>
-
+            
             <h1 class="hero-heading" style="font-size: 2.5rem; margin-top: 1rem;">Passport Authorized</h1>
-
+            
             <p class="hero-subheading" style="max-width: 600px; margin: 0 auto;">
-                Your entry was registered in the Mirror 5000 field database. Your copy of the manual is being dispatched to your email.
+                Your entry was successfully registered in the Vercel Sandbox database. Your copy of the manual is being dispatched to your email.
             </p>
 
             <!-- Dynamic alignment recap -->
-            <div class="notebook-card" style="text-align: left; max-width: 600px; width: 100%; border-left: 5px solid var(--accent-purple);">
-                <div class="card-title" style="font-size: 1.4rem; margin-bottom: 1rem;">Your Visibility Framework</div>
-
+            <div class="notebook-card" style="text-align: left; max-width: 600px; width: 100%; border-left: 5px solid var(--accent-purple); margin-bottom: 0;">
+                <div class="card-title" style="font-size: 1.4rem; margin-bottom: 1rem;">Your Sandbox Profile</div>
+                
                 <p style="font-weight: 500; font-size: 0.95rem; text-transform: uppercase; color: var(--shadow-charcoal);">1. Identity sentence:</p>
                 <div class="compiler-recap-box" id="success-identity-sentence" style="font-size: 1.5rem; margin-top: 5px; margin-bottom: 1.5rem;">
                     Loading your profile...
@@ -42,33 +170,83 @@
 
             <!-- PDF Download Box -->
             <div class="pdf-download-box">
-                <h3 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; color: var(--gold);">Local Delivery Backup</h3>
+                <h3 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; color: var(--gold);">Free PDF Backup Link</h3>
                 <p style="font-size: 0.95rem; line-height: 1.4; margin-bottom: 1.5rem;">
-                    If emails are slow, blocked, or caught in spam, you can trigger an instant download of the PDF field manual manually:
+                    Your free manual is sent to your inbox. You can also trigger an instant download manually here:
                 </p>
-                <a href="assets/seen-until-believed-sacred-tech-edition.pdf" download class="btn-stamp primary" style="text-decoration: none; width: 100%; justify-content: center;">
+                <a href="../assets/seen-until-believed-sacred-tech-edition.pdf" download class="btn-stamp primary" style="text-decoration: none; width: 100%; justify-content: center;">
                     Download Manual PDF
                 </a>
             </div>
 
-            <!-- Future Paid Offer Slot -->
-            <div class="offer-tease-card">
-                <div class="stamp-badge" style="font-size: 0.9rem; margin-bottom: 0.5rem; float: right; border-color: var(--accent-purple); color: var(--accent-purple);">UPGRADE</div>
-                <h3 style="font-family: var(--font-display); font-size: 1.6rem; color: var(--accent-purple); margin-bottom: 0.8rem; clear: both;">Want the 30-Day Mirror Execution Kit?</h3>
-                <p style="font-size: 0.95rem; line-height: 1.5; color: var(--shadow-charcoal); margin-bottom: 1rem;">
-                    Get access to my private notion template tracker, daily checklists, video hooks template, and three silent-vlog example walkthroughs. Stop posting blindly. Implement the Mirror Method with structures.
+            <!-- PAID EBOOK OFFER CARD -->
+            <div class="ebook-offer-card" id="paid-offer-card">
+                <div class="stamp-badge" style="float: right; font-size: 0.9rem; margin-bottom: 0.5rem; border-color: var(--stamp-red); color: var(--stamp-red);">SPECIAL OFFER</div>
+                <h2 style="font-family: var(--font-display); font-size: 2.2rem; clear: both;">Trillion Dollar Miracle</h2>
+                <p style="font-family: var(--font-accents); font-size: 1.25rem; color: var(--accent-purple); font-weight: bold; margin-top: 2px;">
+                    The Wealth Mirror After Visibility
                 </p>
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                    <span style="font-family: var(--font-heading); font-size: 1.25rem; color: var(--stamp-red); transform: rotate(-3deg);">Coming Soon</span>
-                    <div id="waitlist-action-container" style="display: flex; gap: 10px; align-items: center;">
-                        <button class="btn-stamp" id="btn-join-waitlist" style="font-size: 0.9rem; padding: 6px 14px;">Join Waitlist</button>
+
+                <div class="ebook-grid">
+                    <div>
+                        <div class="book-mockup with-image" style="padding: 0; display: block; height: auto;">
+                            <img src="../assets/trillion-dollar-miracle-cover.jpg" alt="Trillion Dollar Miracle Cover" style="width: 100%; height: auto; display: block;">
+                        </div>
+                    </div>
+                    <div>
+                        <p style="font-size: 1.05rem; line-height: 1.5; color: var(--shadow-charcoal);">
+                            <strong>Seen Until Believed</strong> teaches you how to become visible. <br>
+                            <strong>Trillion Dollar Miracle</strong> teaches you what to build once visibility creates opportunity.
+                        </p>
+                        <p style="font-size: 0.95rem; line-height: 1.5; margin-top: 1rem; color: var(--ink); opacity: 0.85;">
+                            A paid field file on wealth transfer, family banking, cash flow, business acquisition, AI/family-office thinking, asset preservation, and long-term legacy.
+                        </p>
+
+                        <div class="price-tag-container">
+                            <span class="original-price" id="price-original">$87</span>
+                            <span class="active-price" id="price-active">$27</span>
+                            <span class="save-badge" id="save-amount">Save $60</span>
+                        </div>
+
+                        <div class="scarcity-box" id="scarcity-indicator">
+                            Loading scarcity stats...
+                        </div>
+
+                        <button type="button" class="btn-stamp primary" id="btn-unlock-miracle" style="width: 100%; justify-content: center; font-size: 1.3rem; padding: 14px 28px; margin-top: 10px;">
+                            Stamp + Unlock Miracle
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Video Briefing Section -->
+                <div class="video-briefing-box">
+                    <h3 style="font-family: var(--font-display); font-size: 1.6rem;">Watch This Before You Unlock the Book</h3>
+                    <p style="font-family: var(--font-accents); font-size: 1.15rem; color: var(--shadow-charcoal);">
+                        A 2–20 minute field briefing on how visibility turns into leverage, and how leverage turns into wealth.
+                    </p>
+                    <div id="video-briefing-target">
+                        <div class="video-placeholder-text">Video briefing coming soon.</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Compliance Text -->
+            <!-- FUTURE WAITLIST kit teaser -->
+            <div class="offer-tease-card" style="text-align: left; width: 100%;">
+                <div class="stamp-badge" style="font-size: 0.9rem; margin-bottom: 0.5rem; float: right; border-color: var(--accent-purple); color: var(--accent-purple);">UPGRADE</div>
+                <h3 style="font-family: var(--font-display); font-size: 1.6rem; color: var(--accent-purple); margin-bottom: 0.8rem; clear: both;">Want help executing the visibility side?</h3>
+                <p style="font-size: 0.95rem; line-height: 1.5; color: var(--shadow-charcoal); margin-bottom: 1rem;">
+                    <strong>30-Day Mirror Execution Kit</strong>: A guided implementation kit for turning your identity sentence, 30-day stake, and ordinary life into a daily content engine.
+                </p>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <span style="font-family: var(--font-heading); font-size: 1.25rem; color: var(--stamp-red); transform: rotate(-3deg);">Coming Soon</span>
+                    <div id="waitlist-action-container" style="display: flex; gap: 10px; align-items: center;">
+                        <button class="btn-stamp" id="btn-join-kit-waitlist" style="font-size: 0.9rem; padding: 6px 14px;">Notify Me When It Drops</button>
+                    </div>
+                </div>
+            </div>
+
             <p class="compliance-text">
-                Compliance Disclosure: Results are not guaranteed. This is a visibility and content strategy system, not a promise of fame, income, or platform growth. Your information is only used to send the PDF, newsletter updates, and Mirror 5000 strategy notes. No spam. No selling your data.
+                Compliance Disclosure: Scarcity claims represent actual copies remaining at this beta pricing limit. Results are not guaranteed.
             </p>
 
         </section>
@@ -89,13 +267,13 @@
                 <span>By Kendren Cornish</span>
                 <a href="https://kendren.us" target="_blank">kendren.us</a>
                 <a href="https://instagram.com/THXKENDREN" target="_blank">@THXKENDREN</a>
-                <a href="https://instagram.com/FRU1T4U" target="_blank">@FRU1T4U</a>
+                <a href="mailto:TACYHON@proton.me">TACYHON@proton.me</a>
             </div>
             <p style="font-size: 0.85rem; opacity: 0.7;">
-                <a href="mirror5000.html" style="color: var(--ink); text-decoration: none; font-weight: bold;">← Return to mirror5000</a>
+                <a href="../mirror5000" style="color: var(--ink); text-decoration: none; font-weight: bold;">← Return to Mirror Entry Sheet</a>
             </p>
             <div style="margin-top: 1.5rem;">
-                <button type="button" class="ledger-trigger" id="btn-ledger-trigger" title="System Ledger" style="font-size: 2.2rem; background: transparent; border: none; cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onclick="window.location.href='mirror5000.html?showLedger=true'">🧸</button>
+                <button type="button" class="ledger-trigger" id="btn-ledger-trigger" title="System Ledger" style="font-size: 2.2rem; background: transparent; border: none; cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onclick="window.location.href='../mirror5000?showLedger=true'">🧸</button>
             </div>
         </footer>
 
@@ -105,150 +283,211 @@
     <script>
         const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
             ? 'http://localhost:3005'
-            : 'https://handwritten-lead-funnel.vercel.app';
+            : '';
 
         document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const emailParam = urlParams.get('email') || sessionStorage.getItem('mirror5000_email');
+            const subIdParam = urlParams.get('id') || sessionStorage.getItem('mirror5000_subscriber_id');
+
             const identity = sessionStorage.getItem('mirror5000_identity_sentence');
             const stakes = sessionStorage.getItem('mirror5000_stakes_statement');
-            const email = sessionStorage.getItem('mirror5000_email');
 
             if (identity) {
                 document.getElementById('success-identity-sentence').textContent = identity;
             } else {
-                document.getElementById('success-identity-sentence').textContent =
+                document.getElementById('success-identity-sentence').textContent = 
                     "I am a creator trying to build momentum by documenting my daily growth.";
             }
 
             if (stakes) {
                 document.getElementById('success-stakes-statement').textContent = stakes;
             } else {
-                document.getElementById('success-stakes-statement').textContent =
+                document.getElementById('success-stakes-statement').textContent = 
                     "For the next 30 days, I am choosing visibility over hiding. If I complete this, I gain clarity. If I quit, I stay stuck in the same routine.";
             }
 
-            // Waitlist functionality
-            const waitlistBtn = document.getElementById('btn-join-waitlist');
-            const container = document.getElementById('waitlist-action-container');
+            // Fetch Trillion Product details
+            async function fetchProductDetails() {
+                try {
+                    const res = await fetch(API_BASE + '/api/trillion-info');
+                    if (!res.ok) throw new Error('Failed to load product pricing.');
+                    const data = await res.json();
 
-            if (waitlistBtn && container) {
-                waitlistBtn.addEventListener('click', async () => {
-                    let userEmail = email;
-                    if (!userEmail) {
-                        // Show a small inline text input
-                        container.innerHTML = `
-                            <input type="email" id="waitlist-email-input" class="input-text" placeholder="Enter your email" style="padding: 6px 12px; font-size: 0.9rem; width: 180px; height: 35px; border-width: 2px;">
-                            <button class="btn-stamp primary" id="btn-waitlist-submit" style="font-size: 0.9rem; padding: 6px 14px; transform: none; box-shadow: 2px 2px 0 var(--shadow-charcoal);">Submit</button>
-                        `;
-                        const submitBtn = document.getElementById('btn-waitlist-submit');
-                        if (submitBtn) {
-                            submitBtn.addEventListener('click', async () => {
-                                const inputVal = document.getElementById('waitlist-email-input').value.trim();
-                                if (!inputVal) return alert('Email required.');
-                                await submitWaitlist(inputVal);
-                            });
-                        }
-                        return;
+                    // Update prices
+                    document.getElementById('price-original').textContent = `$${data.originalPrice}`;
+                    document.getElementById('price-active').textContent = `$${data.activePrice}`;
+                    document.getElementById('save-amount').textContent = `Save $${data.originalPrice - data.activePrice}`;
+
+                    // Update scarcity Display
+                    const scarcity = document.getElementById('scarcity-indicator');
+                    if (data.copiesSold === 0) {
+                        scarcity.innerHTML = `<strong>Launch Status:</strong> Less than 100 beta copies left.`;
+                    } else {
+                        scarcity.innerHTML = `<strong>Launch Status:</strong> Only <strong style="color: var(--stamp-red);">${data.remainingCopies}</strong> beta copies left at this price.`;
                     }
 
-                    await submitWaitlist(userEmail);
+                    // Render Video embed
+                    const videoTarget = document.getElementById('video-briefing-target');
+                    if (data.videoUrl && data.videoUrl.trim() !== '') {
+                        const url = data.videoUrl.trim();
+                        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                            const videoId = getYoutubeId(url);
+                            videoTarget.innerHTML = `
+                                <div class="video-container">
+                                    <iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
+                                </div>
+                            `;
+                        } else if (url.includes('vimeo.com')) {
+                            const videoId = getVimeoId(url);
+                            videoTarget.innerHTML = `
+                                <div class="video-container">
+                                    <iframe src="https://player.vimeo.com/video/${videoId}" allowfullscreen></iframe>
+                                </div>
+                            `;
+                        } else if (url.includes('loom.com')) {
+                            const videoId = getLoomId(url);
+                            videoTarget.innerHTML = `
+                                <div class="video-container">
+                                    <iframe src="https://www.loom.com/embed/${videoId}" allowfullscreen></iframe>
+                                </div>
+                            `;
+                        } else {
+                            // Direct MP4 link
+                            videoTarget.innerHTML = `
+                                <div class="video-container">
+                                    <video src="${url}" controls style="width: 100%; height: 100%;"></video>
+                                </div>
+                            `;
+                        }
+                    }
+                } catch (err) {
+                    console.error("Pricing details load error:", err);
+                    document.getElementById('scarcity-indicator').textContent = "Launch Status: Limited copies remaining at beta price.";
+                }
+            }
+
+            fetchProductDetails();
+
+            // Checkout action
+            const checkoutBtn = document.getElementById('btn-unlock-miracle');
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', async () => {
+                    const email = emailParam || prompt("Please confirm your email address to unlock purchase:");
+                    if (!email) return alert('Email is required to match your purchase to your download manual.');
+
+                    checkoutBtn.textContent = 'REDIRECTING TO CHECKOUT...';
+                    checkoutBtn.disabled = true;
+
+                    try {
+                        const res = await fetch(API_BASE + '/api/checkout-intent', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email, subscriberId: subIdParam })
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error || 'Checkout initialization failed.');
+
+                        // Redirect to the provided checkout url (Cash app instructions page or Stripe or External)
+                        window.location.href = data.redirectUrl;
+                    } catch (err) {
+                        alert(err.message || 'Checkout failed. Please try again.');
+                        checkoutBtn.textContent = 'STAMP + UNLOCK MIRACLE';
+                        checkoutBtn.disabled = false;
+                    }
                 });
             }
 
-            async function submitWaitlist(targetEmail) {
-                try {
-                    const response = await fetch(API_BASE + '/api/waitlist', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: targetEmail })
-                    });
-                    const res = await response.json();
-                    if (!response.ok) throw new Error(res.error || 'Failed to join.');
+            // Execution Kit Waitlist action
+            const waitlistBtn = document.getElementById('btn-join-kit-waitlist');
+            const waitlistContainer = document.getElementById('waitlist-action-container');
+            if (waitlistBtn) {
+                waitlistBtn.addEventListener('click', async () => {
+                    const email = emailParam || prompt("Confirm your email address for waitlist notification:");
+                    if (!email) return;
 
-                    container.innerHTML = `<span style="font-family: var(--font-heading); color: var(--success-green); font-size: 1.1rem; transform: rotate(1deg);">✓ Joined Waitlist!</span>`;
-                } catch (err) {
-                    alert(err.message || 'Error joining waitlist.');
-                }
+                    waitlistBtn.textContent = 'SENDING...';
+                    waitlistBtn.disabled = true;
+
+                    try {
+                        const res = await fetch(API_BASE + '/api/kit-interest', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email })
+                        });
+                        if (!res.ok) throw new Error('Waitlist submission failed.');
+                        waitlistContainer.innerHTML = `<span style="font-family: var(--font-heading); color: var(--success-green); font-size: 1.15rem; transform: rotate(1deg);">✓ Marked for the next file.</span>`;
+                    } catch (err) {
+                        alert(err.message || 'Error joining waitlist.');
+                        waitlistBtn.textContent = 'Notify Me When It Drops';
+                        waitlistBtn.disabled = false;
+                    }
+                });
             }
 
-            // Generate over 100 realistic creator profiles for the marquee ticker fallback/padding
+            // Video parsing utilities
+            function getYoutubeId(url) {
+                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                const match = url.match(regExp);
+                return (match && match[2].length === 11) ? match[2] : null;
+            }
+
+            function getVimeoId(url) {
+                const match = url.match(/vimeo\.com\/(\d+)/);
+                return match ? match[1] : null;
+            }
+
+            function getLoomId(url) {
+                const match = url.match(/loom\.com\/share\/([a-zA-Z0-9]+)/);
+                return match ? match[1] : null;
+            }
+
+            // Mock marquee ticker logic
             function generateMockCreators() {
-                const names = [
-                    "Kendren", "Tachyon", "Aria", "Julian", "Marcus", "Sienna", "Elena", "Liam", "Sophia", "Zavier",
-                    "Chloe", "Devon", "Amara", "Kai", "Maya", "Silas", "Freya", "Jonah", "Leila", "Dante",
-                    "Zoe", "Luca", "Nova", "Jasper", "Zara", "Tristan", "Naomi", "Ezra", "Iris", "Felix",
-                    "Clara", "Leo", "Ruby", "Silas", "Ada", "Jude", "Gwen", "Kaelen", "Fiona", "Cassian",
-                    "Seraphina", "Callum", "Lyra", "Rowan", "Evangeline", "Beckett", "Isla", "Gideon", "Maeve", "Cyrus",
-                    "Ophelia", "Lachlan", "Astrid", "Atticus", "Genevieve", "Rory", "Aurelia", "Soren", "Elowen", "Cassius",
-                    "Thalia", "Kian", "Mirabelle", "Killian", "Freya", "Tobias", "Nadia", "Ronan", "Imogen", "Balthazar"
-                ];
-                const domains = ["gmail.com", "proton.me", "substack.com", "beehiiv.com", "yahoo.com", "icloud.com", "outlook.com", "hey.com"];
-
-                const mockList = [];
-                for (let i = 0; i < 120; i++) {
-                    const baseName = names[i % names.length];
-                    const nameSuffix = (i >= names.length) ? String(i) : "";
-                    const fullName = baseName + nameSuffix;
-
-                    const domain = domains[(i * 3) % domains.length];
-                    const emailPrefix = baseName.toLowerCase() + (i % 7 ? String(i % 100) : "");
-
-                    const visibleNameLen = Math.min(2, fullName.length);
-                    const obfuscatedName = fullName.substring(0, visibleNameLen) + '***';
-
-                    const visibleEmailLen = Math.min(2, emailPrefix.length);
-                    const obfuscatedEmail = emailPrefix.substring(0, visibleEmailLen) + '***@' + domain;
-
-                    mockList.push({ name: obfuscatedName, email: obfuscatedEmail });
+                const names = ["Kendren", "Tachyon", "Aria", "Julian", "Marcus", "Sienna", "Elena", "Liam", "Sophia", "Zavier", "Chloe", "Devon", "Amara", "Kai", "Maya", "Silas", "Freya", "Jonah", "Leila", "Dante"];
+                const domains = ["gmail.com", "proton.me", "substack.com", "yahoo.com"];
+                const list = [];
+                for (let i = 0; i < 40; i++) {
+                    const name = names[i % names.length] + (i > names.length ? i : '');
+                    const domain = domains[i % domains.length];
+                    list.push({
+                        name: name.substring(0, 2) + '***',
+                        email: name.toLowerCase().substring(0, 2) + '***@' + domain
+                    });
                 }
-                return mockList;
+                return list;
             }
 
-            // Signup ticker feed
             async function loadRecentSignups() {
                 const tickerMove = document.getElementById('recent-ticker-move');
                 if (!tickerMove) return;
-
-                const mockCreators = generateMockCreators();
-
+                const mock = generateMockCreators();
                 try {
-                    const response = await fetch(API_BASE + '/api/subscribers/recent');
-                    if (!response.ok) throw new Error('Failed to load recent signups');
-                    const data = await response.json();
-
-                    // Merge real signups at the front, followed by mock creators to pad it
-                    const merged = [...data];
-                    mockCreators.forEach(mock => {
-                        if (merged.length < 120) {
-                            merged.push(mock);
-                        }
-                    });
-
-                    renderTicker(merged);
-                } catch (err) {
-                    console.warn("Could not connect to live submissions API, falling back to mock logs:", err);
-                    renderTicker(mockCreators);
+                    const res = await fetch(API_BASE + '/api/subscribers/recent');
+                    if (!res.ok) throw new Error();
+                    const data = await res.json();
+                    const merged = [...data, ...mock].slice(0, 50);
+                    tickerMove.innerHTML = merged.map(s => `
+                        <div class="ticker-item">
+                            <span class="highlight-name">${escapeHTML(s.name)}</span> 
+                            (<span class="highlight-email">${escapeHTML(s.email)}</span>) 
+                            just authorized mirror passport entry
+                        </div>
+                    `).join(' &nbsp;&bull;&nbsp; ');
+                } catch (e) {
+                    tickerMove.innerHTML = mock.map(s => `
+                        <div class="ticker-item">
+                            <span class="highlight-name">${escapeHTML(s.name)}</span> 
+                            (<span class="highlight-email">${escapeHTML(s.email)}</span>) 
+                            just authorized mirror passport entry
+                        </div>
+                    `).join(' &nbsp;&bull;&nbsp; ');
                 }
-            }
-
-            function renderTicker(items) {
-                const tickerMove = document.getElementById('recent-ticker-move');
-                tickerMove.innerHTML = items.map(s => {
-                    return `<div class="ticker-item">
-                        <span class="highlight-name">${escapeHTML(s.name)}</span>
-                        (<span class="highlight-email">${escapeHTML(s.email)}</span>)
-                        just authorized mirror passport entry
-                    </div>`;
-                }).join(' &nbsp;&bull;&nbsp; ');
             }
 
             function escapeHTML(str) {
                 if (!str) return '';
-                return str
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#039;');
+                return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             }
 
             loadRecentSignups();

@@ -26,6 +26,10 @@
                 grid-template-columns: 1fr;
                 text-align: center;
             }
+            .book-mockup {
+                max-width: 200px;
+                margin: 0 auto 1.5rem auto;
+            }
         }
         .book-mockup {
             border: 3px solid var(--ink);
@@ -53,6 +57,9 @@
             font-family: var(--font-body);
             color: var(--ink);
             letter-spacing: 2px;
+        }
+        .book-mockup.with-image::before {
+            content: none;
         }
         .price-tag-container {
             display: flex;
@@ -182,8 +189,8 @@
 
                 <div class="ebook-grid">
                     <div>
-                        <div class="book-mockup">
-                            Trillion<br>Dollar<br>Miracle
+                        <div class="book-mockup with-image" style="padding: 0; display: block; height: auto;">
+                            <img src="../assets/trillion-dollar-miracle-cover.jpg" alt="Trillion Dollar Miracle Cover" style="width: 100%; height: auto; display: block;">
                         </div>
                     </div>
                     <div>

@@ -87,7 +87,7 @@
                 </p>
 
                 <div style="margin-top: 2rem;">
-                    <a href="../mirror5000-test" class="btn-stamp" style="font-size: 0.95rem; text-decoration: none;">
+                    <a id="btn-return-home" href="../mirror5000" class="btn-stamp" style="font-size: 0.95rem; text-decoration: none;">
                         Return to Homepage
                     </a>
                 </div>
@@ -114,12 +114,16 @@
             const urlParams = new URLSearchParams(window.location.search);
             const emailParam = urlParams.get('email') || sessionStorage.getItem('mirror5000_email') || 'your email';
 
+            const isTest = window.location.pathname.includes('-test');
+            document.getElementById('btn-return-home').setAttribute('href', isTest ? '../mirror5000-test' : '../mirror5000');
+
             document.querySelectorAll('.user-email-placeholder').forEach(el => {
                 el.textContent = emailParam;
             });
 
             try {
-                const res = await fetch(API_BASE + '/api/trillion-info-test');
+                const infoEndpoint = isTest ? '/api/trillion-info-test' : '/api/trillion-info';
+                const res = await fetch(API_BASE + infoEndpoint);
                 if (!res.ok) throw new Error();
                 const data = await res.json();
 

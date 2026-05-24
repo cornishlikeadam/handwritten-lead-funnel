@@ -100,7 +100,7 @@
                     - If you did not receive your link or believe this is an error, contact support at <a href="mailto:kendren@proton.me" style="color: var(--stamp-red); font-weight: bold;">kendren@proton.me</a> or <a href="mailto:tachyon@proton.me" style="color: var(--stamp-red); font-weight: bold;">tachyon@proton.me</a>.
                 </div>
                 <div style="margin-top: 2rem;">
-                    <a href="../mirror5000-test" class="btn-stamp" style="font-size: 0.95rem; text-decoration: none;">
+                    <a id="btn-return-home" href="../mirror5000" class="btn-stamp" style="font-size: 0.95rem; text-decoration: none;">
                         Return to Homepage
                     </a>
                 </div>
@@ -133,6 +133,9 @@
             const errorState = document.getElementById('error-state');
             const errorText = document.getElementById('error-message-text');
 
+            const isTest = window.location.pathname.includes('-test');
+            document.getElementById('btn-return-home').setAttribute('href', isTest ? '../mirror5000-test' : '../mirror5000');
+
             if (!token && !stripeSessionId) {
                 loadingState.style.display = 'none';
                 errorState.style.display = 'block';
@@ -142,27 +145,21 @@
 
             // If coming back from Stripe successful checkout session
             if (stripeSessionId && !token) {
-                // In production, we'd wait for Stripe webhook, but let's poll/query Stripe session state
-                // Let's implement check-stripe API if Stripe mode is configured, otherwise fallback:
                 loadingState.innerHTML = '<p style="font-family: var(--font-heading); font-size: 1.5rem; color: var(--ink);">Validating Stripe purchase...</p>';
-                try {
-                    // Let's check status
-                    // Just direct user to wait or prompt their email
-                    setTimeout(() => {
-                        loadingState.style.display = 'none';
-                        errorState.style.display = 'block';
-                        errorText.innerHTML = `Stripe session completed. Your email outbox is dispatching the file. Please check your inbox or search for your spam folder.<br><br>Email: <strong>${sessionStorage.getItem('mirror5000_email') || 'your registered email'}</strong>`;
-                    }, 2500);
-                } catch (e) {
+                setTimeout(() => {
                     loadingState.style.display = 'none';
                     errorState.style.display = 'block';
-                }
+                    errorText.innerHTML = `Stripe session completed. Your email outbox is dispatching the file. Please check your inbox or search for your spam folder.<br><br>Email: <strong>${sessionStorage.getItem('mirror5000_email') || 'your registered email'}</strong>`;
+                }, 2500);
                 return;
             }
 
             // Normal token unlock validation
             try {
-                const res = await fetch(API_BASE + `/api/validate-token-test?token=${encodeURIComponent(token)}`);
+                const validateUrl = isTest ? '/api/validate-token-test' : '/api/validate-token';
+                const downloadUrl = isTest ? '/api/download-ebook-test' : '/api/download-ebook';
+                
+                const res = await fetch(API_BASE + `${validateUrl}?token=${encodeURIComponent(token)}`);
                 if (!res.ok) throw new Error();
                 const data = await res.json();
 
@@ -170,7 +167,7 @@
                 if (data.valid) {
                     successState.style.display = 'block';
                     document.getElementById('buyer-email-display').textContent = data.email;
-                    document.getElementById('btn-download-ebook').setAttribute('href', API_BASE + `/api/download-ebook-test?token=${encodeURIComponent(token)}`);
+                    document.getElementById('btn-download-ebook').setAttribute('href', API_BASE + `${downloadUrl}?token=${encodeURIComponent(token)}`);
                 } else {
                     errorState.style.display = 'block';
                     if (data.expired) {

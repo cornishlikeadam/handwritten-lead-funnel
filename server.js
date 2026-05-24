@@ -40,6 +40,14 @@ app.get('/mirror5000/confirmed', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'confirmed.html'), { dotfiles: 'allow' });
 });
 
+app.get('/mirror5000/payment-pending', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'payment-pending.html'), { dotfiles: 'allow' });
+});
+
+app.get('/mirror5000/trillion-unlocked', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'trillion-unlocked.html'), { dotfiles: 'allow' });
+});
+
 app.get('/mirror5000-test', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'mirror5000-test.html'), { dotfiles: 'allow' });
 });
@@ -1012,14 +1020,14 @@ app.post('/api/subscribe-test', rateLimiter, async (req, res) => {
 });
 
 // 2. Get Trillion Dollar Miracle Info & Scarcity
-app.get('/api/trillion-info-test', async (req, res) => {
+app.get(['/api/trillion-info-test', '/api/trillion-info'], async (req, res) => {
     try {
         const limit = parseInt(process.env.TRILLION_LAUNCH_LIMIT) || 100;
         const envOriginalPrice = parseInt(process.env.TRILLION_ORIGINAL_PRICE) || 87;
         const envActivePrice = parseInt(process.env.TRILLION_ACTIVE_PRICE) || 27;
         const videoUrl = process.env.TRILLION_VIDEO_URL || '';
         const paymentMode = process.env.PAYMENT_MODE || 'manual';
-        const cashappTag = process.env.CASHAPP_CASHTAG || '$kendren';
+        const cashappTag = process.env.CASHAPP_CASHTAG || '$senseifruit';
         const manualInstructions = process.env.MANUAL_PAYMENT_INSTRUCTIONS || '';
 
         const purchases = await getPurchases();
@@ -1045,13 +1053,16 @@ app.get('/api/trillion-info-test', async (req, res) => {
 });
 
 // 3. Checkout Intent Logger & Redirector
-app.post('/api/checkout-intent-test', async (req, res) => {
+app.post(['/api/checkout-intent-test', '/api/checkout-intent'], async (req, res) => {
     const { email, subscriberId } = req.body;
     if (!email) {
         return res.status(400).json({ error: 'Email is required for checkout.' });
     }
 
     try {
+        const isTest = req.path.includes('-test');
+        const prefix = isTest ? '/mirror5000-test' : '/mirror5000';
+
         const paymentMode = process.env.PAYMENT_MODE || 'manual';
         const price = parseInt(process.env.TRILLION_ACTIVE_PRICE) || 27;
         const originalPrice = parseInt(process.env.TRILLION_ORIGINAL_PRICE) || 87;
@@ -1077,7 +1088,8 @@ app.post('/api/checkout-intent-test', async (req, res) => {
             download_token_expires_at: null,
             download_count: 0,
             refund_status: 'none',
-            admin_notes: null
+            admin_notes: null,
+            source_page: isTest ? 'mirror5000-test' : 'mirror5000'
         };
 
         await addPurchase(newPurchase);
@@ -1089,7 +1101,7 @@ app.post('/api/checkout-intent-test', async (req, res) => {
             return res.json({
                 success: true,
                 paymentMode: 'manual',
-                redirectUrl: `/mirror5000-test/payment-pending?email=${encodeURIComponent(email)}&purchaseId=${purchaseId}`
+                redirectUrl: `${prefix}/payment-pending?email=${encodeURIComponent(email)}&purchaseId=${purchaseId}`
             });
         } else if (paymentMode === 'stripe') {
             const stripeSecret = process.env.STRIPE_SECRET_KEY;
@@ -1106,8 +1118,8 @@ app.post('/api/checkout-intent-test', async (req, res) => {
             }
 
             const stripe = require('stripe')(stripeSecret);
-            const successUrl = process.env.STRIPE_SUCCESS_URL || `${getPublicBaseUrl()}/mirror5000-test/trillion-unlocked?session_id={CHECKOUT_SESSION_ID}`;
-            const cancelUrl = process.env.STRIPE_CANCEL_URL || `${getPublicBaseUrl()}/mirror5000-test/confirmed?email=${encodeURIComponent(email)}`;
+            const successUrl = process.env.STRIPE_SUCCESS_URL || `${getPublicBaseUrl()}${prefix}/trillion-unlocked?session_id={CHECKOUT_SESSION_ID}`;
+            const cancelUrl = process.env.STRIPE_CANCEL_URL || `${getPublicBaseUrl()}${prefix}/confirmed?email=${encodeURIComponent(email)}`;
             
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
@@ -1185,7 +1197,7 @@ app.post('/api/checkout-intent-test', async (req, res) => {
 });
 
 // 4. Stripe Webhook Handler
-app.post('/api/webhooks/stripe-test', async (req, res) => {
+app.post(['/api/webhooks/stripe-test', '/api/webhooks/stripe'], async (req, res) => {
     const sig = req.headers['stripe-signature'];
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     const stripeSecret = process.env.STRIPE_SECRET_KEY;
@@ -1222,7 +1234,7 @@ app.post('/api/webhooks/stripe-test', async (req, res) => {
 });
 
 // 5. Ebook Download Controller
-app.get('/api/download-ebook-test', async (req, res) => {
+app.get(['/api/download-ebook-test', '/api/download-ebook'], async (req, res) => {
     const { token } = req.query;
     if (!token) {
         return res.status(400).send('Download token missing.');
@@ -1265,7 +1277,7 @@ app.get('/api/download-ebook-test', async (req, res) => {
 });
 
 // 6. Ebook Page Validate Token
-app.get('/api/validate-token-test', async (req, res) => {
+app.get(['/api/validate-token-test', '/api/validate-token'], async (req, res) => {
     const { token } = req.query;
     if (!token) return res.status(400).json({ valid: false, error: 'Token missing' });
     try {
@@ -1285,7 +1297,7 @@ app.get('/api/validate-token-test', async (req, res) => {
 });
 
 // 7. Execution Kit Waitlist Opt-in
-app.post('/api/kit-interest-test', async (req, res) => {
+app.post(['/api/kit-interest-test', '/api/kit-interest'], async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email required.' });
 
@@ -1619,70 +1631,7 @@ app.post('/api/admin/login', (req, res) => {
         return res.status(401).json({ error: 'Unauthorized. Invalid ledger key.' });
     }
 });
-
-app.get('/api/admin/stats', requireAdmin, async (req, res) => {
-    try {
-        const subs = await getSubscribers();
-        const outbox = await getEmailOutbox();
-        
-        // Calculate aggregations
-        const startOfToday = new Date();
-        startOfToday.setHours(0,0,0,0);
-        const subsToday = subs.filter(s => new Date(s.created_at) >= startOfToday).length;
-
-        // Monetization routes
-        const monetizationCounts = {};
-        subs.forEach(s => {
-            const val = s.monetization_route || s.monetization || 'unknown';
-            monetizationCounts[val] = (monetizationCounts[val] || 0) + 1;
-        });
-        let topMonetization = 'N/A';
-        let maxMon = 0;
-        for (const [r, c] of Object.entries(monetizationCounts)) {
-            if (c > maxMon) {
-                maxMon = c;
-                topMonetization = r;
-            }
-        }
-
-        // Obstacles
-        const obstacleCounts = {};
-        subs.forEach(s => {
-            const val = s.biggest_obstacle || s.obstacle || 'unknown';
-            obstacleCounts[val] = (obstacleCounts[val] || 0) + 1;
-        });
-        let topObstacle = 'N/A';
-        let maxObs = 0;
-        for (const [o, c] of Object.entries(obstacleCounts)) {
-            if (c > maxObs) {
-                maxObs = c;
-                topObstacle = o;
-            }
-        }
-
-        // Audience size breakdown
-        const audienceCounts = {};
-        subs.forEach(s => {
-            const val = s.audience_size || s.audienceSize || 'I have no audience yet';
-            audienceCounts[val] = (audienceCounts[val] || 0) + 1;
-        });
-
-        res.json({
-            totalSubscribers: subs.length,
-            subscribersToday: subsToday,
-            mostCommonMonetization: topMonetization,
-            mostCommonObstacle: topObstacle,
-            audienceSizeBreakdown: audienceCounts,
-            subscribers: subs,
-            outbox: outbox.filter(e => e.status !== 'sent'), // pending or failed queue
-            persistence: getPersistenceStatus(),
-            smtpConfigured: Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)
-        });
-    } catch (err) {
-        console.error("Error generating admin statistics:", err);
-        res.status(500).json({ error: 'Internal server error.' });
-    }
-});
+// Redundant stats endpoint removed. Managed via joint array routing.
 
 // Retry Email Endpoint
 app.post('/api/admin/retry-email', requireAdmin, async (req, res) => {

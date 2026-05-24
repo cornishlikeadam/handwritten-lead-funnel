@@ -1,10 +1,10 @@
 const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:3005'
-    : 'https://handwritten-lead-funnel.vercel.app';
+    : '';
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    // Prefill name & email from sessionStorage if available (e.g. from homepage popup)
+    
+    // Prefill name & email from sessionStorage if available
     const cachedName = sessionStorage.getItem('mirror5000_first_name');
     const cachedEmail = sessionStorage.getItem('mirror5000_email');
     if (cachedName && document.getElementById('input-name')) {
@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const stakeRecap = document.getElementById('stake-recap');
 
     function updateIdentitySentence() {
+        if (!inputIdentity || !inputGoal || !inputDocumenting) return;
         const idVal = inputIdentity.value || '[identity]';
         const goalVal = inputGoal.value || '[goal]';
         const docVal = inputDocumenting.value.trim() || '[journey]';
@@ -35,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateStakeStatement() {
+        if (!inputUpside || !inputDownside) return;
         const upVal = inputUpside.value || '[upside]';
         const downVal = inputDownside.value || '[downside]';
         stakeRecap.textContent = `For the next 30 days, I am choosing visibility over hiding. If I complete this, I gain ${upVal}. If I quit, I stay stuck in ${downVal}.`;
@@ -51,8 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Choice Cards (Radios / Checkboxes)
     // -------------------------------------------------------------
     const choiceCards = document.querySelectorAll('.grid-choice-card');
-
-    // Initialize checked card states
+    
     choiceCards.forEach(card => {
         const input = card.querySelector('input');
         if (input && input.checked) {
@@ -92,26 +93,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorAlert = document.getElementById('error-alert');
 
     function showError(msg) {
+        if (!errorAlert) return;
         errorAlert.textContent = msg;
         errorAlert.style.display = 'block';
         errorAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function hideError() {
-        errorAlert.textContent = '';
-        errorAlert.style.display = 'none';
+        if (errorAlert) {
+            errorAlert.textContent = '';
+            errorAlert.style.display = 'none';
+        }
     }
 
     function validateStep(stepIndex) {
         hideError();
 
         if (stepIndex === 0) {
-            const identity = inputIdentity.value;
-            const goal = inputGoal.value;
-            const documenting = inputDocumenting.value.trim();
-            const challenge = inputChallenge.value.trim();
-            const upside = inputUpside.value;
-            const downside = inputDownside.value;
+            const identity = inputIdentity ? inputIdentity.value : '';
+            const goal = inputGoal ? inputGoal.value : '';
+            const documenting = inputDocumenting ? inputDocumenting.value.trim() : '';
+            const challenge = inputChallenge ? inputChallenge.value.trim() : '';
+            const upside = inputUpside ? inputUpside.value : '';
+            const downside = inputDownside ? inputDownside.value : '';
 
             if (!identity) {
                 showError('Please select your visibility identity / role.');
@@ -138,11 +142,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             }
         } else if (stepIndex === 1) {
-            // Check that radio buttons are chosen
             const audienceVal = document.querySelector('input[name="audience_size"]:checked');
             const platformVal = document.querySelector('input[name="primary_platform"]:checked');
-            const monetization = document.getElementById('input-monetization').value;
-            const obstacle = document.getElementById('input-obstacle').value;
+            const monetization = document.getElementById('input-monetization') ? document.getElementById('input-monetization').value : '';
+            const obstacle = document.getElementById('input-obstacle') ? document.getElementById('input-obstacle').value : '';
 
             if (!audienceVal) {
                 showError('Please select your aggregate starting audience size.');
@@ -161,9 +164,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             }
         } else if (stepIndex === 2) {
-            const name = document.getElementById('input-name').value.trim();
-            const email = document.getElementById('input-email').value.trim();
-            const consent = document.getElementById('input-consent').checked;
+            const nameEl = document.getElementById('input-name');
+            const emailEl = document.getElementById('input-email');
+            const consentEl = document.getElementById('input-consent');
+            
+            const name = nameEl ? nameEl.value.trim() : '';
+            const email = emailEl ? emailEl.value.trim() : '';
+            const consent = consentEl ? consentEl.checked : false;
 
             if (!name) {
                 showError('Please enter your name.');
@@ -188,6 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function goToStep(stepIndex) {
         if (stepIndex < 0 || stepIndex >= steps.length) return;
+        if (!steps[0]) return; // Form not present on this page
 
         steps.forEach((step, idx) => {
             if (idx === stepIndex) {
@@ -225,8 +233,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (prevBtn2) prevBtn2.addEventListener('click', () => goToStep(0));
     if (prevBtn3) prevBtn3.addEventListener('click', () => goToStep(1));
 
-    // Make nodes clickable directly if validated
     stepNodes.forEach((node, idx) => {
+        if (!node) return;
         node.addEventListener('click', () => {
             if (idx < currentStep) {
                 goToStep(idx);
@@ -261,7 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Get form values
             const formData = new FormData(form);
             const data = {};
             formData.forEach((value, key) => {
@@ -269,13 +276,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             data.consent_opt_in = document.getElementById('input-consent').checked;
 
-            // Cache generated phrases and details in sessionStorage for confirmed page
             sessionStorage.setItem('mirror5000_identity_sentence', identityRecap.textContent);
             sessionStorage.setItem('mirror5000_stakes_statement', stakeRecap.textContent);
             sessionStorage.setItem('mirror5000_email', data.email);
             sessionStorage.setItem('mirror5000_first_name', data.first_name);
 
-            // Display loading
             const originalBtnText = submitBtn.textContent;
             submitBtn.textContent = 'STAMPING...';
             submitBtn.disabled = true;
@@ -288,13 +293,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 const result = await response.json();
-
                 if (!response.ok) {
-                    throw new Error(result.error || 'Failed to submit workbook details.');
+                    throw new Error(result.error || 'Failed to submit details.');
                 }
 
-                // Redirect on success
-                window.location.href = 'confirmed.html';
+                sessionStorage.setItem('mirror5000_subscriber_id', result.redirectUrl.split('id=')[1] || '');
+                window.location.href = result.redirectUrl;
 
             } catch (err) {
                 showError(err.message || 'An error occurred. Please try again.');
@@ -305,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------
-    // 5. Admin Ledger Overlay / Drawer Login
+    // 5. Admin Ledger Drawer Authorization
     // -------------------------------------------------------------
     const ledgerTrigger = document.getElementById('btn-ledger-trigger');
     const loginModal = document.getElementById('login-modal');
@@ -316,15 +320,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let adminToken = sessionStorage.getItem('mirror5000_admin_token') || null;
     let fullSubscriberList = [];
+    let fullPurchasesList = [];
 
     function verifyBearCodeAndOpenLedger() {
-        const bearCode = prompt("Enter Bear Code (🧸):");
+        const bearCode = prompt("Enter Bear Code (🧸) for Sandbox ledger:");
         if (bearCode !== "9938") {
             alert("Incorrect Bear Code.");
             return;
         }
-
-        // Bear Code matches, now verify/open ledger secret key
+        
         if (adminToken) {
             adminDrawer.style.display = 'block';
             fetchAdminStats();
@@ -334,7 +338,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Trigger Ledger Drawer
     if (ledgerTrigger) {
         ledgerTrigger.addEventListener('click', () => {
             if (adminDrawer.style.display === 'block') {
@@ -345,7 +348,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Check if showLedger is passed in URL query params
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('showLedger') === 'true') {
         verifyBearCodeAndOpenLedger();
@@ -369,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleAdminLogin() {
         const password = adminPassInput.value;
-        if (!password) return alert('Please enter key password.');
+        if (!password) return alert('Please enter password key.');
 
         try {
             const response = await fetch(API_BASE + '/api/admin/login', {
@@ -379,16 +381,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const result = await response.json();
-
             if (!response.ok) throw new Error(result.error || 'Login failed.');
 
             adminToken = result.token;
             sessionStorage.setItem('mirror5000_admin_token', adminToken);
-
+            
             loginModal.style.display = 'none';
             adminDrawer.style.display = 'block';
             adminPassInput.value = '';
-
+            
             fetchAdminStats();
 
         } catch (err) {
@@ -397,7 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------
-    // 6. Admin Panel Statistics & Outbox Retry
+    // 6. Admin Panel Statistics & Checklist Renderer
     // -------------------------------------------------------------
     async function fetchAdminStats() {
         if (!adminToken) return;
@@ -410,7 +411,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    // Token expired or invalid
                     sessionStorage.removeItem('mirror5000_admin_token');
                     adminToken = null;
                     adminDrawer.style.display = 'none';
@@ -422,22 +422,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const stats = await response.json();
             fullSubscriberList = stats.subscribers;
+            fullPurchasesList = stats.purchases;
 
-            // Fill numerical counters
-            document.getElementById('stat-total').textContent = stats.totalSubscribers;
-            document.getElementById('stat-today').textContent = stats.subscribersToday;
-            document.getElementById('stat-monetization').textContent = stats.mostCommonMonetization;
-            document.getElementById('stat-obstacle').textContent = stats.mostCommonObstacle;
-
-            // Render Table Rows
+            // Render Subscribers Ledger Tab
+            document.getElementById('stat-total').textContent = stats.totalSubscribers || 0;
+            document.getElementById('stat-today').textContent = stats.subscribersToday || 0;
+            document.getElementById('stat-monetization').textContent = stats.mostCommonMonetization || 'N/A';
+            document.getElementById('stat-obstacle').textContent = stats.mostCommonObstacle || 'N/A';
             renderLedgerRows(fullSubscriberList);
 
-            // Render Outbox retry listings
+            // Render Sales Ledger Tab
+            document.getElementById('stat-sales-revenue').textContent = `$${stats.totalRevenue}`;
+            document.getElementById('stat-sales-paid').textContent = stats.totalPurchases;
+            document.getElementById('stat-sales-pending').textContent = stats.pendingCount;
+            document.getElementById('stat-sales-conversion').textContent = stats.conversionRate;
+            document.getElementById('stat-sales-remaining').textContent = stats.copiesRemaining;
+            renderSalesRows(fullPurchasesList);
+
+            // Render Email Queue Tab
             renderOutboxQueue(stats.outbox);
+
+            // Render Setup Checklist Tab
+            renderChecklist(stats.checklist);
 
         } catch (err) {
             console.error("Stats fetching error:", err);
-            alert('Failed to retrieve intelligence ledger stats.');
+            alert('Failed to retrieve sandbox ledger stats.');
         }
     }
 
@@ -452,18 +462,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         tbody.innerHTML = items.map(item => {
             const dateStr = new Date(item.created_at).toLocaleDateString();
-
-            // Format contact details
             const emailHtml = item.email ? `<div><strong>Email:</strong> ${escapeHTML(item.email)}</div>` : '';
             const phoneHtml = item.phone ? `<div><strong>Phone:</strong> ${escapeHTML(item.phone)}</div>` : '';
             const cityHtml = item.city_state ? `<div><strong>Loc:</strong> ${escapeHTML(item.city_state)}</div>` : '';
             const contactInfo = `${emailHtml}${phoneHtml}${cityHtml}` || 'N/A';
 
-            // Format social handles
             const instaHtml = item.instagram_handle ? `<div><strong>Insta:</strong> ${escapeHTML(item.instagram_handle)}</div>` : '';
             const tiktokHtml = item.tiktok_handle ? `<div><strong>TikTok:</strong> ${escapeHTML(item.tiktok_handle)}</div>` : '';
             const ytHtml = item.youtube_url ? `<div><strong>YT:</strong> <a href="${item.youtube_url.startsWith('http') ? item.youtube_url : 'https://' + item.youtube_url}" target="_blank" style="color: var(--accent-purple); word-break: break-all;">Link</a></div>` : '';
             const socialHandles = `${instaHtml}${tiktokHtml}${ytHtml}` || 'None';
+
+            const kitBadge = item.interested_execution_kit
+                ? `<br><span style="background: rgba(108,148,130,0.15); color: var(--success-green); padding: 1px 4px; font-weight: bold; border-radius: 2px; font-size: 0.75rem;">Kit Interest</span>`
+                : '';
 
             return `
                 <tr>
@@ -478,10 +489,61 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td style="font-size: 0.85rem; line-height: 1.3;">
                         <strong>Obstacle:</strong> ${escapeHTML(item.biggest_obstacle)}<br>
                         <strong>Route:</strong> ${escapeHTML(item.monetization_route)}
+                        ${kitBadge}
                     </td>
                     <td style="font-size: 0.8rem; white-space: nowrap;">
                         Sub Welcome: <strong style="color: ${item.email_sent_status === 'sent' ? 'var(--success-green)' : 'var(--stamp-red)'}">${item.email_sent_status}</strong><br>
                         Admin Alert: <strong style="color: ${item.admin_notified_status === 'sent' ? 'var(--success-green)' : 'var(--stamp-red)'}">${item.admin_notified_status}</strong>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function renderSalesRows(items) {
+        const tbody = document.getElementById('sales-ledger-rows');
+        if (!tbody) return;
+
+        if (items.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; opacity: 0.6;">No sandbox purchases recorded yet.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = items.map(item => {
+            const dateStr = new Date(item.created_at).toLocaleDateString();
+            const priceStr = `$${(item.price_cents / 100).toFixed(2)}`;
+            
+            let statusColor = 'var(--gold)';
+            if (item.payment_status === 'paid') statusColor = 'var(--success-green)';
+            if (item.payment_status === 'failed') statusColor = 'var(--stamp-red)';
+
+            let actionButtons = '';
+            if (item.payment_status !== 'paid') {
+                actionButtons += `<button type="button" class="btn-stamp" style="font-size: 0.75rem; padding: 4px 8px; transform: none; box-shadow: 2px 2px 0 var(--shadow-charcoal);" onclick="approvePurchase('${item.id}')">Verify Paid</button>`;
+            } else {
+                actionButtons += `<button type="button" class="btn-stamp" style="font-size: 0.75rem; padding: 4px 8px; transform: none; box-shadow: 2px 2px 0 var(--shadow-charcoal);" onclick="resendEbookLink('${item.id}')">Resend Link</button>`;
+            }
+
+            return `
+                <tr>
+                    <td>${dateStr}</td>
+                    <td><strong>${escapeHTML(item.email)}</strong></td>
+                    <td style="font-size: 0.85rem;">${escapeHTML(item.product_name)}</td>
+                    <td style="font-family: var(--font-heading);">${priceStr}</td>
+                    <td style="font-size: 0.85rem; text-transform: uppercase;">
+                        ${escapeHTML(item.payment_mode)} / ${escapeHTML(item.payment_provider || 'N/A')}
+                    </td>
+                    <td>
+                        <strong style="color: ${statusColor}; text-transform: uppercase; font-size: 0.85rem;">
+                            ${escapeHTML(item.payment_status)}
+                        </strong>
+                        ${item.paid_at ? `<div style="font-size: 0.75rem; opacity: 0.6;">Paid: ${new Date(item.paid_at).toLocaleDateString()}</div>` : ''}
+                        ${item.download_count > 0 ? `<div style="font-size: 0.75rem; color: var(--success-green);">Downloads: ${item.download_count}</div>` : ''}
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 5px;">
+                            ${actionButtons}
+                        </div>
                     </td>
                 </tr>
             `;
@@ -514,7 +576,112 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
     }
 
-    // Global binding helper for retry button click
+    function renderChecklist(checklist) {
+        if (!checklist) return;
+
+        const setStatus = (id, valid, successText, failText) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (valid) {
+                el.innerHTML = `<span style="color: var(--success-green); font-weight: bold;">✓ ${successText}</span>`;
+            } else {
+                el.innerHTML = `<span style="color: var(--stamp-red); font-weight: bold;">⚠️ ${failText}</span>`;
+            }
+        };
+
+        // Render Assets checklist items
+        setStatus('check-asset-free-pdf', checklist.freePdfExists, 'Local Found', 'Missing (public/assets/seen-until-believed-sacred-tech-edition.pdf)');
+        setStatus('check-asset-paid-pdf', checklist.trillionPdfExists, 'Local Found', 'Missing (public/assets/trillion-dollar-miracle.pdf)');
+        setStatus('check-asset-free-cover', checklist.freeCoverExists, 'Local Found', 'Missing (public/assets/seen_until_believed_cover.jpg)');
+        setStatus('check-asset-paid-cover', checklist.trillionCoverExists, 'Local Found', 'Missing (public/assets/trillion-dollar-miracle-cover.jpg)');
+        setStatus('check-asset-video-url', checklist.videoUrlConfigured, 'Configured', 'Using Placeholder');
+        setStatus('check-asset-admin-pass', checklist.adminPasswordConfigured, 'Configured', "Default '9938' Active");
+        setStatus('check-asset-sender-email', checklist.senderEmailConfigured, 'Configured', 'Using Default SMTP User');
+        setStatus('check-asset-admin-email', checklist.adminNotificationEmailConfigured, 'Configured', 'Default (kendren/tachyon@proton.me)');
+
+        // Render SMTP checklist items
+        setStatus('check-smtp-host', checklist.smtpHostConfigured, 'Set', 'Not Configured (Fallback Local files)');
+        setStatus('check-smtp-port', checklist.smtpPortConfigured, 'Set', 'Missing');
+        setStatus('check-smtp-user', checklist.smtpUsernameConfigured, 'Set', 'Missing');
+        setStatus('check-smtp-pass', checklist.smtpPasswordConfigured, 'Set', 'Missing');
+
+        // Render Payment Mode
+        const modeEl = document.getElementById('check-payment-mode');
+        const detailsEl = document.getElementById('check-payment-details');
+        
+        if (modeEl && detailsEl) {
+            modeEl.textContent = checklist.paymentMode;
+            if (checklist.paymentMode === 'manual') {
+                if (checklist.cashappTagConfigured) {
+                    detailsEl.innerHTML = `Cash App mode enabled. Cashtag is set in environment (✓ verified). Manual admin approval required to unlock.`;
+                } else {
+                    detailsEl.innerHTML = `<span style="color: var(--stamp-red); font-weight: bold;">⚠️ CASHAPP_CASHTAG not set.</span> Please configure it in your Vercel Project Settings.`;
+                }
+            } else if (checklist.paymentMode === 'stripe') {
+                if (checklist.stripeKeysConfigured) {
+                    detailsEl.innerHTML = `Stripe Checkout enabled. Stripe Secret Keys & Webhooks verified (✓ active). Autounlocks are enabled.`;
+                } else {
+                    detailsEl.innerHTML = `<span style="color: var(--stamp-red); font-weight: bold;">⚠️ Stripe keys missing.</span> Set STRIPE_SECRET_KEY and STRIPE_PRICE_ID_TRILLION.`;
+                }
+            } else {
+                if (checklist.externalCheckoutConfigured) {
+                    detailsEl.innerHTML = `External checkout URL verified (✓ active). Will redirect clicks directly. Autounlocks are enabled.`;
+                } else {
+                    detailsEl.innerHTML = `<span style="color: var(--stamp-red); font-weight: bold;">⚠️ TRILLION_CHECKOUT_URL missing.</span> Please set the link.`;
+                }
+            }
+        }
+    }
+
+    // -------------------------------------------------------------
+    // 7. Global Actions for Ledger Purchases
+    // -------------------------------------------------------------
+    window.approvePurchase = async function(purchaseId) {
+        if (!adminToken) return;
+        if (!confirm('Mark this Cash App/Manual transaction as verified? This generates download tokens and emails access link.')) return;
+
+        try {
+            const res = await fetch(API_BASE + '/api/admin/mark-paid', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${adminToken}`
+                },
+                body: JSON.stringify({ purchaseId })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to verify transaction.');
+
+            alert(data.message || 'Payment verified. Ebook download tokens emailed successfully.');
+            fetchAdminStats();
+        } catch (err) {
+            alert(err.message || 'Approval action failed.');
+        }
+    };
+
+    window.resendEbookLink = async function(purchaseId) {
+        if (!adminToken) return;
+        if (!confirm('Resend access download link email to buyer?')) return;
+
+        try {
+            const res = await fetch(API_BASE + '/api/admin/resend-link', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${adminToken}`
+                },
+                body: JSON.stringify({ purchaseId })
+            });
+            if (!res.ok) throw new Error('Resend link failed.');
+
+            alert('Download link successfully queued & resent!');
+            fetchAdminStats();
+        } catch (err) {
+            alert(err.message || 'Action failed.');
+        }
+    };
+
     window.retryOutboxEmail = async function(outboxId) {
         if (!adminToken) return;
 
@@ -539,7 +706,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Client Side Search Filter
+    // Client Side Search Filters
     const searchInput = document.getElementById('ledger-search');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -548,7 +715,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderLedgerRows(fullSubscriberList);
                 return;
             }
-
             const filtered = fullSubscriberList.filter(item => {
                 return (
                     (item.first_name || '').toLowerCase().includes(query) ||
@@ -563,7 +729,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // CSV Download Export
+    const salesSearchInput = document.getElementById('sales-ledger-search');
+    if (salesSearchInput) {
+        salesSearchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if (!query) {
+                renderSalesRows(fullPurchasesList);
+                return;
+            }
+            const filtered = fullPurchasesList.filter(item => {
+                return (item.email || '').toLowerCase().includes(query);
+            });
+            renderSalesRows(filtered);
+        });
+    }
+
+    // CSV Download Export: Subscribers
     const exportCsvBtn = document.getElementById('btn-export-csv');
     if (exportCsvBtn) {
         exportCsvBtn.addEventListener('click', () => {
@@ -571,15 +752,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('No records available for export.');
                 return;
             }
-
-            const headers = [
-                'Date', 'First Name', 'Email', 'Instagram', 'TikTok', 'YouTube URL', 'Phone', 'City/State',
-                'Identity Role', 'Exit Goal', 'Documenting', 'Generated Identity Sentence',
-                '30Day Challenge', 'Stakes Upside', 'Stakes Downside', 'Generated Stakes Sentence',
-                'Audience Size', 'Primary Platform', 'Monetization Path', 'Biggest Obstacle',
-                'Consent Opt-In', 'Source Page', 'Email Status', 'Admin Alert Status'
-            ];
-
+            const headers = ['Date', 'First Name', 'Email', 'Instagram', 'TikTok', 'YouTube URL', 'Phone', 'City/State', 'Identity Role', 'Exit Goal', 'Documenting', 'Challenge Stakes', 'Agg Audience', 'Platform', 'Monetization Path', 'Biggest Obstacle', 'Execution Kit Waitlist'];
             const rows = fullSubscriberList.map(item => [
                 new Date(item.created_at).toISOString(),
                 item.first_name,
@@ -592,36 +765,58 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.identity_type,
                 item.goal,
                 item.documenting,
-                item.generated_identity_sentence,
-                item.challenge_30_day,
-                item.upside,
-                item.downside,
                 item.generated_stake_statement,
                 item.audience_size,
                 item.primary_platform,
                 item.monetization_route,
                 item.biggest_obstacle,
-                item.consent_opt_in ? 'Yes' : 'No',
-                item.source_page || 'mirror5000',
-                item.email_sent_status,
-                item.admin_notified_status
+                item.interested_execution_kit ? 'Yes' : 'No'
             ]);
-
-            const csvContent = [
-                headers.join(','),
-                ...rows.map(row => row.map(field => `"${(field || '').toString().replace(/"/g, '""')}"`).join(','))
-            ].join('\n');
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.setAttribute('href', url);
-            link.setAttribute('download', `mirror_5000_ledger_export_${new Date().toISOString().slice(0,10)}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            downloadCSV(headers, rows, 'mirror_5000_sandbox_subscribers');
         });
+    }
+
+    // CSV Download Export: Sales Purchases
+    const exportSalesCsvBtn = document.getElementById('btn-export-sales-csv');
+    if (exportSalesCsvBtn) {
+        exportSalesCsvBtn.addEventListener('click', () => {
+            if (fullPurchasesList.length === 0) {
+                alert('No purchase logs available for export.');
+                return;
+            }
+            const headers = ['Date', 'Email', 'Product', 'Original Price Cents', 'Paid Price Cents', 'Currency', 'Payment Mode', 'Provider', 'Status', 'Paid At', 'Downloads Count'];
+            const rows = fullPurchasesList.map(item => [
+                new Date(item.created_at).toISOString(),
+                item.email,
+                item.product_name,
+                item.original_price_cents,
+                item.price_cents,
+                item.currency,
+                item.payment_mode,
+                item.payment_provider || '',
+                item.payment_status,
+                item.paid_at || '',
+                item.download_count
+            ]);
+            downloadCSV(headers, rows, 'mirror_5000_sandbox_sales');
+        });
+    }
+
+    function downloadCSV(headers, rows, fileName) {
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(field => `"${(field || '').toString().replace(/"/g, '""')}"`).join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `${fileName}_export_${new Date().toISOString().slice(0,10)}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     function escapeHTML(str) {
@@ -634,82 +829,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g, '&#039;');
     }
 
-    // Live Signups Ticker Marquee Initialization
-    const tickerMove = document.getElementById('recent-ticker-move');
-    if (tickerMove) {
-        loadRecentSignups();
-    }
-
-    async function loadRecentSignups() {
-        const mockCreators = generateMockCreators();
-        try {
-            const response = await fetch(API_BASE + '/api/subscribers/recent');
-            if (!response.ok) throw new Error('Failed to load recent signups');
-            const data = await response.json();
-
-            // Merge real signups at the front, followed by mock creators to pad it
-            const merged = [...data];
-            mockCreators.forEach(mock => {
-                if (merged.length < 120) {
-                    merged.push(mock);
-                }
-            });
-
-            renderTicker(merged);
-        } catch (err) {
-            console.warn("Could not connect to live submissions API, falling back to mock logs:", err);
-            renderTicker(mockCreators);
-        }
-    }
-
-    function renderTicker(items) {
-        if (!tickerMove) return;
-        tickerMove.innerHTML = items.map(s => {
-            return `<div class="ticker-item">
-                <span class="highlight-name">${escapeHTML(s.name)}</span>
-                (<span class="highlight-email">${escapeHTML(s.email)}</span>)
-                just authorized mirror passport entry
-            </div>`;
-        }).join(' &nbsp;&bull;&nbsp; ');
-    }
-
-    function generateMockCreators() {
-        const names = [
-            "Kendren", "Tachyon", "Aria", "Julian", "Marcus", "Sienna", "Elena", "Liam", "Sophia", "Zavier",
-            "Chloe", "Devon", "Amara", "Kai", "Maya", "Silas", "Freya", "Jonah", "Leila", "Dante",
-            "Zoe", "Luca", "Nova", "Jasper", "Zara", "Tristan", "Naomi", "Ezra", "Iris", "Felix",
-            "Clara", "Leo", "Ruby", "Ada", "Jude", "Gwen", "Kaelen", "Fiona", "Cassian", "Seraphina",
-            "Callum", "Lyra", "Rowan", "Evangeline", "Beckett", "Isla", "Gideon", "Maeve", "Cyrus",
-            "Ophelia", "Lachlan", "Astrid", "Atticus", "Genevieve", "Rory", "Aurelia", "Soren", "Elowen",
-            "Cassius", "Thalia", "Kian", "Mirabelle", "Killian", "Tobias", "Nadia", "Ronan", "Imogen",
-            "Balthazar", "Axiom", "Zephyr", "Orion", "Lysander", "Calliope", "Peregrine", "Elara", "Rohan",
-            "Evander", "Keanu", "Samira", "Callista", "Castor", "Echo", "Faye", "Griffin", "Helix", "Indigo",
-            "Osiris", "Phoenix", "Quest", "River", "Sage", "Sol", "Titus", "Vesper", "Winter", "Xanthe",
-            "Yael", "Zenith", "Atlas", "Caspian", "Dax", "Harlow", "Idris", "Jett", "Koda", "Lennox",
-            "Magnus", "Nola", "Opal", "Priya", "Remy", "Salem", "Tatum", "Wilder", "Zuri"
-        ];
-        const domains = ["gmail.com", "proton.me", "substack.com", "beehiiv.com", "yahoo.com", "icloud.com", "outlook.com", "hey.com"];
-
-        const mockList = [];
-        for (let i = 0; i < 120; i++) {
-            const baseName = names[i % names.length];
-            const nameSuffix = (i >= names.length) ? String(i) : "";
-            const fullName = baseName + nameSuffix;
-
-            const domain = domains[(i * 3) % domains.length];
-            const emailPrefix = baseName.toLowerCase() + (i % 7 ? String(i % 100) : "");
-
-            const visibleNameLen = Math.min(2, fullName.length);
-            const obfuscatedName = fullName.substring(0, visibleNameLen) + '***';
-
-            const visibleEmailLen = Math.min(2, emailPrefix.length);
-            const obfuscatedEmail = emailPrefix.substring(0, visibleEmailLen) + '***@' + domain;
-
-            mockList.push({ name: obfuscatedName, email: obfuscatedEmail });
-        }
-        return mockList;
-    }
-
     // Admin Ledger Tab Switching
     const tabButtons = document.querySelectorAll('.ledger-tab-btn');
     tabButtons.forEach(btn => {
@@ -718,13 +837,10 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
 
             const tabId = btn.getAttribute('data-tab');
-            if (tabId === 'subscribers') {
-                document.getElementById('tab-subscribers').style.display = 'block';
-                document.getElementById('tab-outbox').style.display = 'none';
-            } else {
-                document.getElementById('tab-subscribers').style.display = 'none';
-                document.getElementById('tab-outbox').style.display = 'block';
-            }
+            document.querySelectorAll('.ledger-tab-content').forEach(panel => {
+                panel.style.display = 'none';
+            });
+            document.getElementById(`tab-${tabId}`).style.display = 'block';
         });
     });
 });

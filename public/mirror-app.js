@@ -2,6 +2,9 @@ const API_BASE = (window.location.hostname === 'localhost' || window.location.ho
     ? 'http://localhost:3005'
     : '';
 
+const isTest = window.location.pathname.includes('-test');
+const apiSuffix = isTest ? '-test' : '';
+
 document.addEventListener('DOMContentLoaded', () => {
     
     // Prefill name & email from sessionStorage if available
@@ -286,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch(API_BASE + '/api/subscribe', {
+                const response = await fetch(API_BASE + `/api/subscribe${apiSuffix}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -404,7 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!adminToken) return;
 
         try {
-            const response = await fetch(API_BASE + '/api/admin/stats', {
+            const response = await fetch(API_BASE + `/api/admin/stats${apiSuffix}`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${adminToken}` }
             });
@@ -641,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!confirm('Mark this Cash App/Manual transaction as verified? This generates download tokens and emails access link.')) return;
 
         try {
-            const res = await fetch(API_BASE + '/api/admin/mark-paid', {
+            const res = await fetch(API_BASE + `/api/admin/mark-paid${apiSuffix}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -665,7 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!confirm('Resend access download link email to buyer?')) return;
 
         try {
-            const res = await fetch(API_BASE + '/api/admin/resend-link', {
+            const res = await fetch(API_BASE + `/api/admin/resend-link${apiSuffix}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

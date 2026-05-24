@@ -803,8 +803,10 @@ async function sendAdminNotificationOfSaleIntent(purchase, subscriberId, isFinal
     }
 }
 
-async function dispatchBuyerEbookEmail(recipientEmail, downloadToken) {
-    const downloadLink = `${getPublicBaseUrl()}/mirror5000-test/trillion-unlocked?token=${downloadToken}`;
+async function dispatchBuyerEbookEmail(recipientEmail, downloadToken, sourcePage = 'mirror5000') {
+    const isTest = sourcePage && sourcePage.includes('test');
+    const prefix = isTest ? '/mirror5000-test' : '/mirror5000';
+    const downloadLink = `${getPublicBaseUrl()}${prefix}/trillion-unlocked?token=${downloadToken}`;
     const subject = 'Trillion Dollar Miracle Is Unlocked';
     const bodyHtml = `
     <!DOCTYPE html>
@@ -931,7 +933,21 @@ async function confirmPaidPurchase(purchaseId, email, subscriberId, provider, se
         }
     }
 
-    await dispatchBuyerEbookEmail(email, token);
+    let sourcePage = 'mirror5000';
+    if (usePostgres) {
+        const purRes = await pool.query("SELECT source_page FROM purchases WHERE id = $1", [purchaseId]);
+        if (purRes.rows.length > 0) {
+            sourcePage = purRes.rows[0].source_page || 'mirror5000';
+        }
+    } else {
+        const purchases = await getPurchases();
+        const pur = purchases.find(p => p.id === purchaseId);
+        if (pur) {
+            sourcePage = pur.source_page || 'mirror5000';
+        }
+    }
+
+    await dispatchBuyerEbookEmail(email, token, sourcePage);
     const updatedPurchases = await getPurchases();
     const purObj = updatedPurchases.find(p => p.id === purchaseId);
     if (purObj) {
@@ -939,85 +955,7 @@ async function confirmPaidPurchase(purchaseId, email, subscriberId, provider, se
     }
 }
 
-// 1. Subscribe Sandbox Lead
-app.post('/api/subscribe-test', rateLimiter, async (req, res) => {
-    const body = req.body || {};
-    const first_name = cleanText(body.first_name || body.firstName || body.name);
-    const email = normalizeEmail(body.email);
-    const instagram_handle = cleanText(body.instagram_handle || body.instagram);
-    const tiktok_handle = cleanText(body.tiktok_handle || body.tiktok);
-    const youtube_url = cleanText(body.youtube_url || body.youtube);
-    const phone = cleanText(body.phone);
-    const city_state = cleanText(body.city_state || body.location);
-    const identity_type = cleanText(body.identity_type);
-    const goal = cleanText(body.goal);
-    const documenting = cleanText(body.documenting);
-    const challenge_30_day = cleanText(body.challenge_30_day || body.challenge);
-    const upside = cleanText(body.upside);
-    const downside = cleanText(body.downside);
-    const audience_size = cleanText(body.audience_size);
-    const primary_platform = cleanText(body.primary_platform);
-    const monetization_route = cleanText(body.monetization_route);
-    const biggest_obstacle = cleanText(body.biggest_obstacle);
-    const consent_opt_in = asBoolean(body.consent_opt_in);
-    
-    if (body.website || body.nickname) {
-        return res.status(400).json({ error: 'Spam submission rejected.' });
-    }
-
-    if (!first_name || !email) {
-        return res.status(400).json({ error: 'First Name and Email are required.' });
-    }
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-        return res.status(400).json({ error: 'Please enter a valid email address.' });
-    }
-
-    const identityDropdownVal = identity_type === 'other' ? 'someone starting over' : (identity_type || 'builder');
-    const generated_identity_sentence = `I am a ${identityDropdownVal} trying to ${goal || 'escape the rut'} by documenting ${documenting || 'my daily build'}.`;
-    const generated_stake_statement = `For the next 30 days, I am choosing visibility over hiding. If I complete this, I gain ${upside || 'momentum'}. If I quit, I stay stuck in ${downside || 'invisibility'}.`;
-
-    const subId = crypto.randomUUID();
-    const newSubscriber = {
-        id: subId,
-        first_name,
-        email,
-        instagram_handle,
-        tiktok_handle,
-        youtube_url,
-        phone,
-        city_state,
-        identity_type,
-        goal,
-        documenting,
-        generated_identity_sentence,
-        challenge_30_day,
-        upside,
-        downside,
-        generated_stake_statement,
-        audience_size,
-        primary_platform,
-        monetization_route,
-        biggest_obstacle,
-        consent_opt_in,
-        source_page: 'mirror5000-test',
-        email_sent_status: 'pending',
-        admin_notified_status: 'pending'
-    };
-
-    try {
-        const savedSubscriber = await addSubscriber(newSubscriber);
-        dispatchEmails(savedSubscriber).catch(err => console.error("Sandbox free email error:", err));
-        
-        return res.status(200).json({
-            message: 'Successfully registered in the sandbox system.',
-            redirectUrl: `/mirror5000-test/confirmed?email=${encodeURIComponent(email)}&id=${savedSubscriber.id}`
-        });
-    } catch (err) {
-        console.error("Sandbox subscribe error:", err);
-        return res.status(500).json({ error: 'Failed to save subscription.' });
-    }
-});
+// 1. Subscribe Sandbox Lead (Unified with production /api/subscribe below)
 
 // 2. Get Trillion Dollar Miracle Info & Scarcity
 app.get(['/api/trillion-info-test', '/api/trillion-info'], async (req, res) => {
@@ -1350,7 +1288,7 @@ app.post(['/api/kit-interest-test', '/api/kit-interest'], async (req, res) => {
 });
 
 // 8. Admin Sandbox Statistics
-app.get('/api/admin/stats-test', requireAdmin, async (req, res) => {
+app.get(['/api/admin/stats-test', '/api/admin/stats'], requireAdmin, async (req, res) => {
     try {
         const subs = await getSubscribers();
         const purchases = await getPurchases();
@@ -1376,7 +1314,7 @@ app.get('/api/admin/stats-test', requireAdmin, async (req, res) => {
             freePdfExists: fs.existsSync(path.join(__dirname, 'public', 'assets', 'seen-until-believed-sacred-tech-edition.pdf')),
             trillionPdfExists: fs.existsSync(path.join(__dirname, 'public', 'assets', 'trillion-dollar-miracle.pdf')),
             freeCoverExists: fs.existsSync(path.join(__dirname, 'public', 'assets', 'seen_until_believed_cover.jpg')) || fs.existsSync(path.join(__dirname, 'public', 'assets', 'seen_until_believed_cover.png')),
-            trillionCoverExists: fs.existsSync(path.join(__dirname, 'public', 'assets', 'trillion_cover.jpg')) || fs.existsSync(path.join(__dirname, 'public', 'assets', 'trillion_cover.png')),
+            trillionCoverExists: fs.existsSync(path.join(__dirname, 'public', 'assets', 'trillion-dollar-miracle-cover.jpg')) || fs.existsSync(path.join(__dirname, 'public', 'assets', 'trillion-dollar-miracle-cover.png')),
             videoUrlConfigured: Boolean(process.env.TRILLION_VIDEO_URL && process.env.TRILLION_VIDEO_URL.trim() !== ''),
             logoConfigured: true, // Wordmark default active
             routeConfigured: true, // /mirror5000-test active
@@ -1415,7 +1353,7 @@ app.get('/api/admin/stats-test', requireAdmin, async (req, res) => {
 });
 
 // 9. Admin Manual Mark Paid
-app.post('/api/admin/mark-paid-test', requireAdmin, async (req, res) => {
+app.post(['/api/admin/mark-paid-test', '/api/admin/mark-paid'], requireAdmin, async (req, res) => {
     const { purchaseId } = req.body;
     if (!purchaseId) return res.status(400).json({ error: 'Purchase ID missing.' });
 
@@ -1444,7 +1382,7 @@ app.post('/api/admin/mark-paid-test', requireAdmin, async (req, res) => {
 });
 
 // 10. Admin Resend Link
-app.post('/api/admin/resend-link-test', requireAdmin, async (req, res) => {
+app.post(['/api/admin/resend-link-test', '/api/admin/resend-link'], requireAdmin, async (req, res) => {
     const { purchaseId } = req.body;
     if (!purchaseId) return res.status(400).json({ error: 'Purchase ID missing.' });
 
@@ -1470,7 +1408,7 @@ app.post('/api/admin/resend-link-test', requireAdmin, async (req, res) => {
             }
         }
 
-        await dispatchBuyerEbookEmail(purchase.email, token);
+        await dispatchBuyerEbookEmail(purchase.email, token, purchase.source_page);
         res.json({ success: true });
     } catch (err) {
         console.error("Resend unlock failed:", err);
@@ -1481,7 +1419,7 @@ app.post('/api/admin/resend-link-test', requireAdmin, async (req, res) => {
 // -------------------------------------------------------------
 // API: Subscribe Endpoint
 // -------------------------------------------------------------
-app.post('/api/subscribe', rateLimiter, async (req, res) => {
+app.post(['/api/subscribe-test', '/api/subscribe'], rateLimiter, async (req, res) => {
     const body = req.body || {};
     const first_name = cleanText(body.first_name || body.firstName || body.name);
     const email = normalizeEmail(body.email);
@@ -1500,7 +1438,8 @@ app.post('/api/subscribe', rateLimiter, async (req, res) => {
     const primary_platform = cleanText(body.primary_platform || body.primaryPlatform);
     const monetization_route = cleanText(body.monetization_route || body.monetizationRoute || body.monetization);
     const biggest_obstacle = cleanText(body.biggest_obstacle || body.biggestObstacle || body.obstacle);
-    const source_page = cleanText(body.source_page || body.sourcePage) || 'mirror5000';
+    const isTest = req.path.includes('-test');
+    const source_page = isTest ? 'mirror5000-test' : (cleanText(body.source_page || body.sourcePage) || 'mirror5000');
     const consent_opt_in = asBoolean(body.consent_opt_in || body.consentOptIn);
     const website = cleanText(body.website);
     const nickname = cleanText(body.nickname);
@@ -1567,9 +1506,10 @@ app.post('/api/subscribe', rateLimiter, async (req, res) => {
         console.error("Async email dispatch failed:", err);
     });
 
+    const prefix = isTest ? '/mirror5000-test' : '/mirror5000';
     return res.status(200).json({
-        message: 'Successfully registered in the Mirror 5000 system.',
-        redirectUrl: '/mirror5000/confirmed',
+        message: isTest ? 'Successfully registered in the sandbox system.' : 'Successfully registered in the Mirror 5000 system.',
+        redirectUrl: `${prefix}/confirmed?email=${encodeURIComponent(email)}&id=${savedSubscriber.id}`,
         persistence: getPersistenceStatus()
     });
 });

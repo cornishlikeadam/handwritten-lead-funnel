@@ -2,6 +2,9 @@ const API_BASE = (window.location.hostname === 'localhost' || window.location.ho
     ? 'http://localhost:3005'
     : '';
 
+const isTest = window.location.pathname.includes('-test');
+const apiSuffix = isTest ? '-test' : '';
+
 document.addEventListener('DOMContentLoaded', () => {
     
     // Prefill name & email from sessionStorage if available
@@ -286,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch(API_BASE + '/api/subscribe-test', {
+                const response = await fetch(API_BASE + `/api/subscribe${apiSuffix}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -404,7 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!adminToken) return;
 
         try {
-            const response = await fetch(API_BASE + '/api/admin/stats-test', {
+            const response = await fetch(API_BASE + `/api/admin/stats${apiSuffix}`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${adminToken}` }
             });
@@ -593,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setStatus('check-asset-free-pdf', checklist.freePdfExists, 'Local Found', 'Missing (public/assets/seen-until-believed-sacred-tech-edition.pdf)');
         setStatus('check-asset-paid-pdf', checklist.trillionPdfExists, 'Local Found', 'Missing (public/assets/trillion-dollar-miracle.pdf)');
         setStatus('check-asset-free-cover', checklist.freeCoverExists, 'Local Found', 'Missing (public/assets/seen_until_believed_cover.jpg)');
-        setStatus('check-asset-paid-cover', checklist.trillionCoverExists, 'Local Found', 'Missing (public/assets/trillion_cover.jpg)');
+        setStatus('check-asset-paid-cover', checklist.trillionCoverExists, 'Local Found', 'Missing (public/assets/trillion-dollar-miracle-cover.jpg)');
         setStatus('check-asset-video-url', checklist.videoUrlConfigured, 'Configured', 'Using Placeholder');
         setStatus('check-asset-admin-pass', checklist.adminPasswordConfigured, 'Configured', "Default '9938' Active");
         setStatus('check-asset-sender-email', checklist.senderEmailConfigured, 'Configured', 'Using Default SMTP User');
@@ -641,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!confirm('Mark this Cash App/Manual transaction as verified? This generates download tokens and emails access link.')) return;
 
         try {
-            const res = await fetch(API_BASE + '/api/admin/mark-paid-test', {
+            const res = await fetch(API_BASE + `/api/admin/mark-paid${apiSuffix}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -665,7 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!confirm('Resend access download link email to buyer?')) return;
 
         try {
-            const res = await fetch(API_BASE + '/api/admin/resend-link-test', {
+            const res = await fetch(API_BASE + `/api/admin/resend-link${apiSuffix}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

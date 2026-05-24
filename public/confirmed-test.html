@@ -270,10 +270,10 @@
                 <a href="mailto:TACYHON@proton.me">TACYHON@proton.me</a>
             </div>
             <p style="font-size: 0.85rem; opacity: 0.7;">
-                <a href="../mirror5000-test" style="color: var(--ink); text-decoration: none; font-weight: bold;">← Return to Sandbox Entry Sheet</a>
+                <a id="return-link" href="../mirror5000" style="color: var(--ink); text-decoration: none; font-weight: bold;">← Return to Mirror Entry Sheet</a>
             </p>
             <div style="margin-top: 1.5rem;">
-                <button type="button" class="ledger-trigger" id="btn-ledger-trigger" title="System Ledger" style="font-size: 2.2rem; background: transparent; border: none; cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" onclick="window.location.href='../mirror5000-test?showLedger=true'">🧸</button>
+                <button type="button" class="ledger-trigger" id="btn-ledger-trigger" title="System Ledger" style="font-size: 2.2rem; background: transparent; border: none; cursor: pointer; opacity: 0.7; transition: opacity 0.2s;">🧸</button>
             </div>
         </footer>
 
@@ -286,6 +286,42 @@
             : '';
 
         document.addEventListener('DOMContentLoaded', () => {
+            const isTest = window.location.pathname.includes('-test');
+            const apiSuffix = isTest ? '-test' : '';
+
+            // Update page copy dynamically based on sandbox / live route
+            if (isTest) {
+                document.title = "Passport Verified | Mirror 5000 Sandbox";
+                const heroSub = document.querySelector('.hero-subheading');
+                if (heroSub) heroSub.innerHTML = "Your entry was successfully registered in the Vercel Sandbox database. Your copy of the manual is being dispatched to your email.";
+                const profileTitle = document.querySelector('.notebook-card .card-title');
+                if (profileTitle) profileTitle.textContent = "Your Sandbox Profile";
+                const returnLink = document.getElementById('return-link');
+                if (returnLink) {
+                    returnLink.href = "../mirror5000-test";
+                    returnLink.textContent = "← Return to Sandbox Entry Sheet";
+                }
+            } else {
+                document.title = "Passport Verified | Mirror 5000";
+                const heroSub = document.querySelector('.hero-subheading');
+                if (heroSub) heroSub.innerHTML = "Your entry was successfully registered in the Mirror 5000 database. Your copy of the manual is being dispatched to your email.";
+                const profileTitle = document.querySelector('.notebook-card .card-title');
+                if (profileTitle) profileTitle.textContent = "Your Mirror 5000 Profile";
+                const returnLink = document.getElementById('return-link');
+                if (returnLink) {
+                    returnLink.href = "../mirror5000";
+                    returnLink.textContent = "← Return to Mirror Entry Sheet";
+                }
+            }
+
+            const ledgerTrigger = document.getElementById('btn-ledger-trigger');
+            if (ledgerTrigger) {
+                ledgerTrigger.onclick = (e) => {
+                    e.preventDefault();
+                    window.location.href = isTest ? '../mirror5000-test?showLedger=true' : '../mirror5000?showLedger=true';
+                };
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
             const emailParam = urlParams.get('email') || sessionStorage.getItem('mirror5000_email');
             const subIdParam = urlParams.get('id') || sessionStorage.getItem('mirror5000_subscriber_id');
@@ -310,7 +346,7 @@
             // Fetch Trillion Product details
             async function fetchProductDetails() {
                 try {
-                    const res = await fetch(API_BASE + '/api/trillion-info-test');
+                    const res = await fetch(API_BASE + `/api/trillion-info${apiSuffix}`);
                     if (!res.ok) throw new Error('Failed to load product pricing.');
                     const data = await res.json();
 
@@ -380,7 +416,7 @@
                     checkoutBtn.disabled = true;
 
                     try {
-                        const res = await fetch(API_BASE + '/api/checkout-intent-test', {
+                        const res = await fetch(API_BASE + `/api/checkout-intent${apiSuffix}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ email, subscriberId: subIdParam })
@@ -410,7 +446,7 @@
                     waitlistBtn.disabled = true;
 
                     try {
-                        const res = await fetch(API_BASE + '/api/kit-interest-test', {
+                        const res = await fetch(API_BASE + `/api/kit-interest${apiSuffix}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ email })

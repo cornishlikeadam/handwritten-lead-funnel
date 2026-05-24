@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ebook Unlocked | Mirror 5000</title>
-    <link rel="stylesheet" href="../mirror-style.css?v=1.0.6">
+    <link rel="stylesheet" href="../mirror-style.css?v=1.0.7">
     <style>
         .unlock-card {
             border: 3px solid var(--ink);
@@ -123,6 +123,26 @@
             ? 'http://localhost:3005'
             : 'https://handwritten-lead-funnel.vercel.app';
 
+        async function readJsonResponse(response, fallbackMessage) {
+            const text = await response.text();
+            let data = null;
+
+            if (text) {
+                try {
+                    data = JSON.parse(text);
+                } catch (err) {
+                    const plain = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+                    throw new Error(plain ? `${fallbackMessage}: ${plain.slice(0, 180)}` : `${fallbackMessage}: invalid server response`);
+                }
+            }
+
+            if (!response.ok) {
+                throw new Error((data && (data.error || data.message)) || fallbackMessage);
+            }
+
+            return data;
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
@@ -160,8 +180,7 @@
                 const downloadUrl = isTest ? '/api/download-ebook-test' : '/api/download-ebook';
                 
                 const res = await fetch(API_BASE + `${validateUrl}?token=${encodeURIComponent(token)}`);
-                if (!res.ok) throw new Error();
-                const data = await res.json();
+                const data = await readJsonResponse(res, 'Token validation failed.');
 
                 loadingState.style.display = 'none';
                 if (data.valid) {

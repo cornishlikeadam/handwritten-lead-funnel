@@ -150,7 +150,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   height: 64px;
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 20px;
 }
 .nav-logo {
   font-family: var(--font-display);
@@ -165,13 +165,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   margin-left: auto;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 .nav-links a {
-  padding: 6px 12px;
-  font-size: 13px;
+  padding: 6px 8px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-2);
   border-radius: 6px;
@@ -179,10 +179,22 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   white-space: nowrap;
 }
 .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--bg-glass); }
+.nav-links a.mirror-nav-link {
+  color: #f2ede0;
+  border: 1px solid rgba(201,176,122,0.55);
+  background: rgba(201,176,122,0.10);
+}
+.nav-links a.mirror-nav-link:hover,
+.nav-links a.mirror-nav-link:focus-visible {
+  color: #fff;
+  background: rgba(139,43,43,0.42);
+  border-color: rgba(201,176,122,0.85);
+  outline: none;
+}
 .nav-cta {
   background: linear-gradient(135deg, var(--accent-1), var(--accent-2)) !important;
   color: #fff !important;
-  padding: 8px 18px !important;
+  padding: 7px 14px !important;
   border-radius: 50px !important;
 }
 .nav-toggle { display: none; flex-direction: column; gap: 5px; padding: 8px; margin-left: auto; }
@@ -269,7 +281,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  color: var(--text-3);
+  color: var(--text-2);
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -472,7 +484,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent-2);
+  color: var(--accent-1);
   display: block;
   margin-bottom: 6px;
 }
@@ -822,20 +834,89 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   flex-direction: column;
   gap: 8px;
 }
-.footer-bottom p { font-size: 13px; color: var(--text-3); }
-.footer-quote { font-family: var(--font-serif); font-style: italic; color: var(--accent-1); opacity: 0.7; }
+.footer-bottom p { font-size: 13px; color: var(--text-2); }
+.footer-quote { font-family: var(--font-serif); font-style: italic; color: var(--accent-1); opacity: 1; }
+
+.mirror-site-cta {
+  width: 100%;
+  margin: 48px 0 0;
+  padding: 28px 24px;
+  background:
+    linear-gradient(90deg, rgba(201,176,122,0.12), rgba(139,43,43,0.10)),
+    rgba(17,19,21,0.98);
+  border-top: 1px solid rgba(201,176,122,0.32);
+  border-bottom: 1px solid rgba(201,176,122,0.32);
+}
+
+.mirror-site-cta-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.mirror-site-cta-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.mirror-site-kicker {
+  color: #c9b07a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.mirror-site-cta strong {
+  color: #f4f4f6;
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 3vw, 2.2rem);
+  line-height: 1.1;
+}
+
+.mirror-site-cta p {
+  color: #d7d4cc;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.mirror-site-cta-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: #f2ede0;
+  color: #111315;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.35);
+}
+
+.mirror-site-cta-link:hover,
+.mirror-site-cta-link:focus-visible {
+  background: #c9b07a;
+  color: #111315;
+  outline: none;
+}
 
 /* ── RESPONSIVE ── */
 @media (max-width: 1024px) {
   .unicorn-inner { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr 1fr; }
 }
-@media (max-width: 768px) {
-  .section-pad { padding: 64px 0; }
+@media (max-width: 1100px) {
   .nav-links { display: none; flex-direction: column; position: fixed; inset: 0; background: rgba(9,9,15,0.98); backdrop-filter: blur(20px); justify-content: center; align-items: center; gap: 12px; z-index: 999; }
   .nav-links.open { display: flex; }
   .nav-links a { font-size: 1.2rem; padding: 10px 24px; }
   .nav-toggle { display: flex; }
+}
+@media (max-width: 768px) {
+  .section-pad { padding: 64px 0; }
   .hero-cta-row { flex-direction: column; align-items: center; }
   .pillars-grid { grid-template-columns: 1fr; }
   .cards-grid { grid-template-columns: 1fr; }
@@ -847,6 +928,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   .venn-wrapper { width: 280px; height: 280px; }
   .venn-circle { width: 160px; height: 160px; }
   .callout-banner { padding: 28px 24px; }
+  .mirror-site-cta-inner { align-items: flex-start; flex-direction: column; }
+  .mirror-site-cta-link { width: 100%; }
 }
 @media (max-width: 480px) {
   .stats-grid { grid-template-columns: 1fr 1fr; }
@@ -1266,7 +1349,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .mirror-popup-subtitle {
   font-family: 'Patrick Hand', cursive, sans-serif;
   font-size: 1.4rem;
-  color: #8F7EA6; /* Soft lavender/purple */
+  color: #5F4E78; /* Darkened lavender for readable text */
   margin-bottom: 15px;
   font-weight: bold;
 }
@@ -1340,11 +1423,12 @@ a, button { -webkit-tap-highlight-color: transparent; }
   width: 100%;
   padding: 12px;
   background-color: #C96F6B; /* Muted rose stamp red */
-  color: #E9E4D9;
+  color: #F2EDE0;
   border: 2px solid #2E2D32;
   border-radius: 6px;
   font-family: 'Permanent Marker', cursive, sans-serif;
   font-size: 1.25rem;
+  font-weight: 700;
   cursor: pointer;
   box-shadow: 4px 4px 0px #1D1C20;
   text-transform: uppercase;
@@ -1421,11 +1505,11 @@ a, button { -webkit-tap-highlight-color: transparent; }
 }
 
 .ticker-item span.highlight-name {
-    color: #8F7EA6; /* Soft lavender/purple */
+    color: #5F4E78; /* Darkened lavender for readable text */
 }
 
 .ticker-item span.highlight-email {
-    color: #D1A14E; /* Mustard yellow/ochre */
+    color: #7A5C25; /* Darkened ochre for readable text */
 }
 
 .mirror-admin-entry {

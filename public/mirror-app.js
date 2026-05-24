@@ -5,6 +5,26 @@ const API_BASE = (window.location.hostname === 'localhost' || window.location.ho
 const isTest = window.location.pathname.includes('-test');
 const apiSuffix = isTest ? '-test' : '';
 
+async function readJsonResponse(response, fallbackMessage) {
+    const text = await response.text();
+    let data = null;
+
+    if (text) {
+        try {
+            data = JSON.parse(text);
+        } catch (err) {
+            const plain = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            throw new Error(plain ? `${fallbackMessage}: ${plain.slice(0, 180)}` : `${fallbackMessage}: invalid server response`);
+        }
+    }
+
+    if (!response.ok) {
+        throw new Error((data && (data.error || data.message)) || fallbackMessage);
+    }
+
+    return data;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     
     // Prefill name & email from sessionStorage if available
@@ -295,10 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(data)
                 });
 
-                const result = await response.json();
-                if (!response.ok) {
-                    throw new Error(result.error || 'Failed to submit details.');
-                }
+                const result = await readJsonResponse(response, 'Failed to submit details.');
 
                 sessionStorage.setItem('mirror5000_subscriber_id', result.redirectUrl.split('id=')[1] || '');
                 window.location.href = result.redirectUrl;
@@ -372,6 +389,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function clearAdminSessionAndShowLogin(message) {
+        sessionStorage.removeItem('mirror5000_admin_token');
+        adminToken = null;
+        if (adminDrawer) adminDrawer.style.display = 'none';
+        if (loginModal) loginModal.style.display = 'flex';
+        if (adminPassInput) {
+            adminPassInput.value = '';
+            adminPassInput.focus();
+        }
+        if (message) alert(message);
+    }
+
     async function handleAdminLogin() {
         const password = adminPassInput.value;
         if (!password) return alert('Please enter password key.');
@@ -383,8 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ password })
             });
 
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.error || 'Login failed.');
+            const result = await readJsonResponse(response, 'Login failed.');
 
             adminToken = result.token;
             sessionStorage.setItem('mirror5000_admin_token', adminToken);
@@ -414,16 +442,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    sessionStorage.removeItem('mirror5000_admin_token');
-                    adminToken = null;
-                    adminDrawer.style.display = 'none';
-                    alert('Session expired. Please log in again.');
+                    clearAdminSessionAndShowLogin('Session expired. Enter the Secret Key again.');
                     return;
                 }
-                throw new Error('Failed to fetch ledger stats.');
             }
 
-            const stats = await response.json();
+            const stats = await readJsonResponse(response, 'Failed to fetch ledger stats.');
             fullSubscriberList = stats.subscribers;
             fullPurchasesList = stats.purchases;
 
@@ -653,8 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ purchaseId })
             });
 
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'Failed to verify transaction.');
+            const data = await readJsonResponse(res, 'Failed to verify transaction.');
 
             alert(data.message || 'Payment verified. Ebook download tokens emailed successfully.');
             fetchAdminStats();
@@ -676,7 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ purchaseId })
             });
-            if (!res.ok) throw new Error('Resend link failed.');
+            await readJsonResponse(res, 'Resend link failed.');
 
             alert('Download link successfully queued & resent!');
             fetchAdminStats();
@@ -698,8 +721,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ outboxId })
             });
 
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.error || 'Failed to retry email.');
+            const result = await readJsonResponse(response, 'Failed to retry email.');
 
             alert(result.message || 'Email successfully sent!');
             fetchAdminStats();

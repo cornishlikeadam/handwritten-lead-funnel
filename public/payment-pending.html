@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Pending Verification | Mirror 5000</title>
-    <link rel="stylesheet" href="../mirror-style.css?v=1.0.6">
+    <link rel="stylesheet" href="../mirror-style.css?v=1.0.7">
     <style>
         .verification-box {
             border: 3px solid var(--ink);
@@ -110,6 +110,26 @@
             ? 'http://localhost:3005'
             : 'https://handwritten-lead-funnel.vercel.app';
 
+        async function readJsonResponse(response, fallbackMessage) {
+            const text = await response.text();
+            let data = null;
+
+            if (text) {
+                try {
+                    data = JSON.parse(text);
+                } catch (err) {
+                    const plain = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+                    throw new Error(plain ? `${fallbackMessage}: ${plain.slice(0, 180)}` : `${fallbackMessage}: invalid server response`);
+                }
+            }
+
+            if (!response.ok) {
+                throw new Error((data && (data.error || data.message)) || fallbackMessage);
+            }
+
+            return data;
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const emailParam = urlParams.get('email') || sessionStorage.getItem('mirror5000_email') || 'your email';
@@ -124,8 +144,7 @@
             try {
                 const infoEndpoint = isTest ? '/api/trillion-info-test' : '/api/trillion-info';
                 const res = await fetch(API_BASE + infoEndpoint);
-                if (!res.ok) throw new Error();
-                const data = await res.json();
+                const data = await readJsonResponse(res, 'Payment details unavailable.');
 
                 if (data.paymentMode === 'manual') {
                     document.getElementById('cashapp-instructions').style.display = 'block';

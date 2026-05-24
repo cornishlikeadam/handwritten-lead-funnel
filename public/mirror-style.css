@@ -7,10 +7,13 @@
     --paper-card: #F2EDE0; /* Lighter elevated paper card */
     --ink: #2E2D32; /* Deep slate charcoal ink */
     --stamp-red: #C96F6B; /* Muted rose pink */
+    --stamp-red-text: #8B3D39; /* Darkened rose for readable text */
     --gold: #D1A14E; /* Mustard yellow/ochre */
+    --gold-text: #7A5C25; /* Darkened ochre for readable body text */
     --graph-blue: rgba(110, 139, 170, 0.12); /* Faint graph blue lines */
     --shadow-charcoal: #1D1C20; /* Slate shadow */
     --accent-purple: #8F7EA6; /* Soft lavender/purple */
+    --accent-purple-text: #5F4E78; /* Darkened lavender for readable text */
     --success-green: #6C9482; /* Sage green */
 
     /* Fonts */
@@ -102,7 +105,7 @@ header {
 .mirror-tag {
     font-family: var(--font-doodle);
     font-size: 2.5rem;
-    color: var(--accent-purple);
+    color: var(--accent-purple-text);
     font-weight: bold;
     transform: rotate(5deg);
 }
@@ -135,7 +138,7 @@ header {
 .hero-microcopy {
     font-family: var(--font-handwritten);
     font-size: 1.5rem;
-    color: var(--gold);
+    color: var(--gold-text);
     font-weight: bold;
     margin-top: 1rem;
     transform: rotate(-1deg);
@@ -248,7 +251,7 @@ header {
     font-family: var(--font-handwritten);
     font-size: 1.95rem;
     font-weight: bold;
-    color: var(--accent-purple);
+    color: var(--accent-purple-text);
     outline: none;
     padding: 0 4px;
     cursor: pointer;
@@ -275,7 +278,7 @@ header {
 .margin-note {
     font-family: var(--font-doodle);
     font-size: 1.9rem;
-    color: var(--gold);
+    color: var(--gold-text);
     line-height: 1.2;
     position: absolute;
     right: -25px;
@@ -433,6 +436,7 @@ header {
 .btn-stamp.primary {
     background-color: var(--stamp-red);
     color: var(--paper-bg);
+    font-weight: 700;
 }
 
 /* Live Compiler Recaps */
@@ -495,6 +499,18 @@ CONFIRMED SUCCESS SCREEN
     background-color: rgba(196, 154, 69, 0.05);
     max-width: 480px;
     width: 100%;
+}
+
+.manual-backup-note {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--shadow-charcoal);
+}
+
+.manual-backup-note a {
+    color: var(--accent-purple-text);
+    font-weight: 700;
+    text-decoration: underline;
 }
 
 .offer-tease-card {
@@ -659,7 +675,7 @@ footer {
 }
 
 .footer-social-links a {
-    color: var(--stamp-red);
+    color: var(--stamp-red-text);
     text-decoration: none;
     margin: 0 10px;
     font-weight: bold;
@@ -771,11 +787,11 @@ footer {
 }
 
 .ticker-item span.highlight-name {
-    color: var(--accent-purple);
+    color: var(--accent-purple-text);
 }
 
 .ticker-item span.highlight-email {
-    color: var(--gold);
+    color: var(--gold-text);
 }
 
 @keyframes ticker-slide {

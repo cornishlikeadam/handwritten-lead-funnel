@@ -236,8 +236,13 @@ async function dbInit() {
                 download_token_expires_at TIMESTAMPTZ,
                 download_count INTEGER DEFAULT 0,
                 refund_status VARCHAR(50) DEFAULT 'none',
-                admin_notes TEXT
+                admin_notes TEXT,
+                source_page VARCHAR(255) DEFAULT 'mirror5000'
             );
+        `);
+        await pool.query(`
+            ALTER TABLE purchases
+                ADD COLUMN IF NOT EXISTS source_page VARCHAR(255) DEFAULT 'mirror5000';
         `);
         console.log("PostgreSQL tables checked and ready.");
     } else {
@@ -260,6 +265,7 @@ async function dbInit() {
 
 // Call init
 let dbInitError = null;
+let dbInitRetry = null;
 const dbReady = dbInit().catch((err) => {
     dbInitError = err;
     console.error("Database initialization failed:", err);
@@ -267,7 +273,24 @@ const dbReady = dbInit().catch((err) => {
 
 async function ensureDbReady() {
     await dbReady;
-    if (dbInitError) throw dbInitError;
+    if (dbInitError) {
+        const firstError = dbInitError;
+        if (!dbInitRetry) {
+            dbInitRetry = dbInit()
+                .then(() => {
+                    dbInitError = null;
+                    console.warn("Database initialization recovered after retry:", firstError.message);
+                })
+                .catch((retryErr) => {
+                    dbInitError = retryErr;
+                    throw retryErr;
+                })
+                .finally(() => {
+                    dbInitRetry = null;
+                });
+        }
+        await dbInitRetry;
+    }
 }
 
 // Db Access functions
@@ -316,9 +339,9 @@ async function addPurchase(purchase) {
                 original_price_cents, price_cents, currency, payment_mode, payment_provider,
                 payment_status, checkout_session_id, payment_intent_id, purchase_intent,
                 checkout_started_at, paid_at, download_token, download_token_expires_at,
-                download_count, refund_status, admin_notes
+                download_count, refund_status, admin_notes, source_page
             ) VALUES (
-                $1, NOW(), $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21
+                $1, NOW(), $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22
             )
             RETURNING *
         `;
@@ -329,7 +352,7 @@ async function addPurchase(purchase) {
             purchase.checkout_session_id || null, purchase.payment_intent_id || null, purchase.purchase_intent ?? true,
             purchase.checkout_started_at || null, purchase.paid_at || null, purchase.download_token || null,
             purchase.download_token_expires_at || null, purchase.download_count || 0, purchase.refund_status || 'none',
-            purchase.admin_notes || null
+            purchase.admin_notes || null, purchase.source_page || 'mirror5000'
         ];
         const result = await pool.query(query, values);
         return result.rows[0];
@@ -939,11 +962,25 @@ async function confirmPaidPurchase(purchaseId, email, subscriberId, provider, se
         if (purRes.rows.length > 0) {
             sourcePage = purRes.rows[0].source_page || 'mirror5000';
         }
+        if (sourcePage === 'mirror5000') {
+            const subRes = await pool.query(
+                "SELECT source_page FROM subscribers WHERE id = $1 OR LOWER(email) = LOWER($2) ORDER BY created_at DESC LIMIT 1",
+                [subscriberId || '', email]
+            );
+            if (subRes.rows.length > 0 && subRes.rows[0].source_page) {
+                sourcePage = subRes.rows[0].source_page;
+            }
+        }
     } else {
         const purchases = await getPurchases();
         const pur = purchases.find(p => p.id === purchaseId);
         if (pur) {
             sourcePage = pur.source_page || 'mirror5000';
+        }
+        if (sourcePage === 'mirror5000') {
+            const subs = await getSubscribers();
+            const sub = subs.find(s => s.id === subscriberId || s.email.toLowerCase() === email.toLowerCase());
+            if (sub && sub.source_page) sourcePage = sub.source_page;
         }
     }
 
@@ -1408,7 +1445,14 @@ app.post(['/api/admin/resend-link-test', '/api/admin/resend-link'], requireAdmin
             }
         }
 
-        await dispatchBuyerEbookEmail(purchase.email, token, purchase.source_page);
+        let sourcePage = purchase.source_page || 'mirror5000';
+        if (sourcePage === 'mirror5000') {
+            const subs = await getSubscribers();
+            const sub = subs.find(s => s.id === purchase.subscriber_id || s.email.toLowerCase() === purchase.email.toLowerCase());
+            if (sub && sub.source_page) sourcePage = sub.source_page;
+        }
+
+        await dispatchBuyerEbookEmail(purchase.email, token, sourcePage);
         res.json({ success: true });
     } catch (err) {
         console.error("Resend unlock failed:", err);
